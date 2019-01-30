@@ -237,8 +237,9 @@ GameObject:
   - component: {fileID: 627916102}
   - component: {fileID: 627916104}
   - component: {fileID: 627916103}
+  - component: {fileID: 627916105}
   m_Layer: 0
-  m_Name: Example Controller
+  m_Name: GameController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -286,8 +287,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _placer: {fileID: 627916103}
+  _changePickModeScript: {fileID: 0}
   gameMode: 0
   gameModeButton: {fileID: 1082110619}
+--- !u!114 &627916105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 627916101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 223b34657f299e3429a77a9704249df3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _mainCamera: {fileID: 0}
 --- !u!20 &896679035 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 20155940112608238, guid: c10877f7cd5764de18d46d7b777d1faa,

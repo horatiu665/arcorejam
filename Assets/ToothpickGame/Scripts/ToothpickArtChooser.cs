@@ -29,8 +29,10 @@ public class ToothpickArtChooser : MonoBehaviour
         }
     }
 
+    public ParticleSystem switchParticles;
+
     [DebugButton]
-    private void ToggleNext()
+    public void ToggleNext()
     {
         var curIndex = curSwapArt;
         for (int i = 0; i < swapArt.Count; i++)
@@ -39,7 +41,14 @@ public class ToothpickArtChooser : MonoBehaviour
         }
         swapArt[(curIndex + 1) % swapArt.Count].SetActive(true);
 
-
         toothpick.RefreshModel();
+
+        // the particle shit
+        if (Application.isPlaying)
+        {
+            var e = switchParticles.shape;
+            e.mesh = swapArt[curSwapArt].GetComponent<MeshFilter>().sharedMesh;
+            switchParticles.Play();
+        }
     }
 }

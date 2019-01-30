@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using GoogleARCore;
-using GoogleARCore.Examples.Common;
 using UnityEngine;
-using GoogleARCore.Examples.HelloAR;
 
 #if UNITY_EDITOR
 // Set up touch input propagation while using Instant Preview in the editor.
@@ -86,9 +84,9 @@ public class ToothpickPlacerTest : MonoBehaviour
             RaycastHit rh;
             if (Physics.Raycast(ray, out rh))
             {
-                var hitObject = rh.collider;
+                var hitCollider = rh.collider;
+                var tp = ToothpickPlaceable.Get(hitCollider);
                 // if the hit obj is a toothpick...
-                var tp = hitObject.GetComponent<ToothpickPlaceable>();
                 if (tp != null)
                 {
                     // we hit a toothpick when we clicked. Select it.

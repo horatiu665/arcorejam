@@ -6,7 +6,13 @@ using UnityEngine;
 
 public class ToothpickPlaceable : MonoBehaviour
 {
-    private Dictionary<Collider, ToothpickPlaceable> collidersToToothpicks = new Dictionary<Collider, ToothpickPlaceable>();
+    private static Dictionary<Collider, ToothpickPlaceable> collidersToToothpicks = new Dictionary<Collider, ToothpickPlaceable>();
+    public static ToothpickPlaceable Get(Collider c)
+    {
+        ToothpickPlaceable bb;
+        collidersToToothpicks.TryGetValue(c, out bb);
+        return bb;
+    }
 
     [Header("This object can be placed by the ToothpickPlacer")]
     [SerializeField]

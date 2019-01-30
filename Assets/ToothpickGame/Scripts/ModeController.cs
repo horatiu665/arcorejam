@@ -22,6 +22,21 @@ public class ModeController : MonoBehaviour
         }
     }
 
+    [SerializeField]
+    private ToothpickTypeSwitcherManager _changePickModeScript;
+    public ToothpickTypeSwitcherManager changePickModeScript
+    {
+        get
+        {
+            if (_changePickModeScript == null)
+            {
+                _changePickModeScript = GetComponent<ToothpickTypeSwitcherManager>();
+            }
+            return _changePickModeScript;
+        }
+    }
+
+
 
     [Header("Game Mode")]
     public GameMode gameMode;
@@ -57,6 +72,7 @@ public class ModeController : MonoBehaviour
     {
         gameMode = mode;
         placer.enabled = mode == GameMode.PlacerMode;
+        changePickModeScript.enabled = mode == GameMode.ChangePickMode;
 
     }
 
