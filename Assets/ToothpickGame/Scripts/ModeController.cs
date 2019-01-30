@@ -42,8 +42,7 @@ public class ModeController : MonoBehaviour
     public GameMode gameMode;
     public enum GameMode
     {
-        PlacerMode, // placer
-        ChangePickMode, // placer->break toothpick
+        PlacerMode, // placer, changer, rotator.
         Guess, // guesser => people can say "give up" and find the answer......
     }
 
@@ -72,7 +71,7 @@ public class ModeController : MonoBehaviour
     {
         gameMode = mode;
         placer.enabled = mode == GameMode.PlacerMode;
-        changePickModeScript.enabled = mode == GameMode.ChangePickMode;
+        changePickModeScript.enabled = mode == GameMode.PlacerMode;
 
     }
 

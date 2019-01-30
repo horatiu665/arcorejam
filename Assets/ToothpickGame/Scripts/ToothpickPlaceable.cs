@@ -29,6 +29,8 @@ public class ToothpickPlaceable : MonoBehaviour
         }
     }
 
+    public Material highlightMat;
+
     private void OnEnable()
     {
         collidersToToothpicks.Add(collider, this);
@@ -47,6 +49,27 @@ public class ToothpickPlaceable : MonoBehaviour
         collidersToToothpicks.Add(collider, this);
 
         // maybe do some other shit..?? particles?
+    }
+
+    // OPTIMIZE ME...??
+    internal void Unhighlight()
+    {
+        var r = collider.GetComponent<Renderer>();
+        r.sharedMaterials = new Material[]
+        {
+            r.sharedMaterials[0]
+        };
+    }
+
+    // OPTIMIZE ME...??
+    internal void Highlight()
+    {
+        var r = collider.GetComponent<Renderer>();
+        r.sharedMaterials = new Material[]
+        {
+            r.sharedMaterials[0],
+            highlightMat
+        };
     }
 }
 

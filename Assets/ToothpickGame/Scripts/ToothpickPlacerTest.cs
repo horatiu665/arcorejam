@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GoogleARCore;
 using UnityEngine;
@@ -51,26 +52,15 @@ public class ToothpickPlacerTest : MonoBehaviour
 
     public GameObject toothpickPrefab;
 
+    private List<ToothpickPlaceable> highlighted = new List<ToothpickPlaceable>();
+
     /// <summary>
     /// The Unity Update() method.
     /// </summary>
-    public void Update()
+    public void UpdateOld()
     {
         _UpdateApplicationLifecycle();
-
-        // Hide snackbar when currently tracking at least one plane.
-        Session.GetTrackables<DetectedPlane>(m_AllPlanes);
-        bool showSearchingUI = true;
-        for (int i = 0; i < m_AllPlanes.Count; i++)
-        {
-            if (m_AllPlanes[i].TrackingState == TrackingState.Tracking)
-            {
-                showSearchingUI = false;
-                break;
-            }
-        }
-
-        SearchingForPlaneUI.SetActive(showSearchingUI);
+        HandleSnackbar();
 
         // check if we are clicking n moving stuff...
         if (Input.GetMouseButtonDown(0) ||
@@ -107,6 +97,93 @@ public class ToothpickPlacerTest : MonoBehaviour
 
         }
 
+    }
+
+    private void Update()
+    {
+        _UpdateApplicationLifecycle();
+        HandleSnackbar();
+
+        // raycast uin middle, find target obj
+        var ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
+        RaycastHit rh;
+        if (Physics.Raycast(ray, out rh))
+        {
+            // the obj
+            var hitCollider = rh.collider;
+            var tp = ToothpickPlaceable.Get(hitCollider);
+
+            // highlight shit
+            HandleHighlighting(ray, rh, tp);
+
+            // if input, do stuff
+            // touch shit
+            if (Input.touchCount > 0)
+            {
+                var touch = Input.GetTouch(0);
+                if (touch.phase == TouchPhase.Began)
+                {
+                    HandleClickDown(ray, rh, tp);
+                }
+                else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+                {
+                    HandleClickUp(ray, rh, tp);
+                }
+            }
+            else // mouse shit
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    HandleClickDown(ray, rh, tp);
+                }
+                else if (Input.GetMouseButtonUp(0))
+                {
+                    HandleClickUp(ray, rh, tp);
+                }
+            }
+        }
+    }
+
+    private void HandleClickUp(Ray ray, RaycastHit rh, ToothpickPlaceable tp)
+    {
+        Deselect();
+    }
+
+    private void HandleClickDown(Ray ray, RaycastHit rh, ToothpickPlaceable tp)
+    {
+        Select(tp.gameObject);
+    }
+
+    private void HandleHighlighting(Ray ray, RaycastHit rh, ToothpickPlaceable tp)
+    {
+        foreach (var h in highlighted)
+        {
+            h.Unhighlight();
+        }
+
+        if (tp != null)
+        {
+            tp.Highlight();
+        }
+
+    }
+
+    private void HandleSnackbar()
+    {
+
+        // Hide snackbar when currently tracking at least one plane.
+        Session.GetTrackables<DetectedPlane>(m_AllPlanes);
+        bool showSearchingUI = true;
+        for (int i = 0; i < m_AllPlanes.Count; i++)
+        {
+            if (m_AllPlanes[i].TrackingState == TrackingState.Tracking)
+            {
+                showSearchingUI = false;
+                break;
+            }
+        }
+
+        SearchingForPlaneUI.SetActive(showSearchingUI);
     }
 
     // Deselect = Select(null)

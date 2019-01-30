@@ -20,11 +20,16 @@ public class ToothpickTypeSwitcherManager : MonoBehaviour
         }
     }
 
+    float clickDownTime = 0;
+    public float delayForSwitch = 0.2f;
+    ToothpickPlaceable lastClicked;
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) ||
             (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
         {
+            clickDownTime = Time.time;
             Vector2 innn = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
 
             // first check if we clicked a current spawned stuff
@@ -35,12 +40,20 @@ public class ToothpickTypeSwitcherManager : MonoBehaviour
                 var hitCollider = rh.collider;
                 // if the hit obj is a toothpick...
                 var tp = ToothpickPlaceable.Get(hitCollider);
-                ChangeTypeOf(tp);
-
+                lastClicked = tp;
             }
 
         }
-
+        else if (Input.GetMouseButtonUp(0) || Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
+        {
+            if (lastClicked != null)
+            {
+                if (Time.time - clickDownTime <= delayForSwitch)
+                {
+                    ChangeTypeOf(lastClicked);
+                }
+            }
+        }
     }
 
     private static void ChangeTypeOf(ToothpickPlaceable tp)
@@ -56,4 +69,6 @@ public class ToothpickTypeSwitcherManager : MonoBehaviour
         }
 
     }
+
+
 }
