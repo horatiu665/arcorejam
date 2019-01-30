@@ -14,11 +14,22 @@ using Input = GoogleARCore.InstantPreviewInput;
 /// </summary>
 public class ToothpickPlacerTest : MonoBehaviour
 {
-    /// <summary>
-    /// The first-person camera being used to render the passthrough camera image (i.e. AR background).
-    /// </summary>
-    public Camera FirstPersonCamera;
-    
+    [SerializeField]
+    private Camera _mainCamera;
+    public Camera mainCamera
+    {
+        get
+        {
+            if (_mainCamera == null)
+            {
+                _mainCamera = Camera.main;
+            }
+            return _mainCamera;
+        }
+    }
+
+    List<GameObject> selection = new List<GameObject>();
+
     /// <summary>
     /// A game object parenting UI for displaying the "searching for planes" snackbar.
     /// </summary>
@@ -63,24 +74,96 @@ public class ToothpickPlacerTest : MonoBehaviour
 
         SearchingForPlaneUI.SetActive(showSearchingUI);
 
-        // If the player has not touched the screen, we are done with this update.
-        Touch touch;
-        if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
+        // check if we are clicking n moving stuff...
+        if (Input.GetMouseButtonDown(0) ||
+            (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
         {
+            Vector2 innn = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
+
+            // first check if we clicked a current spawned stuff
+            var ray = this.mainCamera.ScreenPointToRay(innn);
+            bool foundSelection = false;
+            RaycastHit rh;
+            if (Physics.Raycast(ray, out rh))
+            {
+                var hitObject = rh.collider;
+                // if the hit obj is a toothpick...
+                var tp = hitObject.GetComponent<ToothpickPlaceable>();
+                if (tp != null)
+                {
+                    // we hit a toothpick when we clicked. Select it.
+                    Select(tp.gameObject);
+                    foundSelection = true;
+                }
+            }
+
+            if (!foundSelection)
+            {
+                DoSpawnStuff(Input.mousePosition);
+            }
+        }
+        else if (Input.GetMouseButtonUp(0) ||
+            (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended))
+        {
+            Deselect();
+
+        }
+
+    }
+
+    // Deselect = Select(null)
+    public void Deselect()
+    {
+        Select(null);
+    }
+
+    public void Select(GameObject toothpick, bool additive = false)
+    {
+        // null is like deselect.
+        if (toothpick == null)
+        {
+            // unparent
+            foreach (var s in selection)
+            {
+                s.transform.SetParent(null);
+            }
+            // clear list.
+            selection.Clear();
             return;
         }
 
+        // add/remove to selection list
+        if (additive)
+        {
+            selection.Add(toothpick);
+        }
+        else
+        {
+            selection.Clear();
+            selection.Add(toothpick);
+        }
+
+        // parent selection list - could have been just this. or just the actual object...
+        for (int i = 0; i < selection.Count; i++)
+        {
+            selection[i].transform.SetParent(mainCamera.transform);
+        }
+
+    }
+
+    private void DoSpawnStuff(Vector2 touchPos)
+    {
         // Raycast against the location the player touched to search for planes.
         TrackableHit hit;
         TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
             TrackableHitFlags.FeaturePointWithSurfaceNormal;
 
-        if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
+        if (Frame.Raycast(touchPos.x, touchPos.y, raycastFilter, out hit))
         {
             // Use hit pose and camera pose to check if hittest is from the
             // back of the plane, if it is, no need to create the anchor.
             if ((hit.Trackable is DetectedPlane) &&
-                Vector3.Dot(FirstPersonCamera.transform.position - hit.Pose.position,
+                Vector3.Dot(mainCamera.transform.position - hit.Pose.position,
                     hit.Pose.rotation * Vector3.up) < 0)
             {
                 Debug.Log("Hit at back of the current DetectedPlane");
@@ -93,7 +176,7 @@ public class ToothpickPlacerTest : MonoBehaviour
 
                 // Instantiate Andy model at the hit pose.
                 var andyObject = Instantiate(prefab, hit.Pose.position, hit.Pose.rotation);
-                
+
                 // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
                 // world evolves.
                 var anchor = hit.Trackable.CreateAnchor(hit.Pose);

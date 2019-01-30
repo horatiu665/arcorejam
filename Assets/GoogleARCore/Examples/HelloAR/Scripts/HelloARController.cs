@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="HelloARController.cs" company="Google">
 //
 // Copyright 2017 Google Inc. All Rights Reserved.
@@ -96,6 +96,12 @@ namespace GoogleARCore.Examples.HelloAR
             }
 
             SearchingForPlaneUI.SetActive(showSearchingUI);
+
+            //Do_TouchUpdate_SpawnSticks();
+        }
+
+        public void Do_TouchUpdate_SpawnSticks()
+        {
 
             // If the player has not touched the screen, we are done with this update.
             Touch touch;

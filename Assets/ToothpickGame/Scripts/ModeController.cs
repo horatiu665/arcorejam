@@ -1,0 +1,63 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
+
+public class ModeController : MonoBehaviour
+{
+    [SerializeField]
+    private ToothpickPlacerTest _placer;
+    public ToothpickPlacerTest placer
+    {
+        get
+        {
+            if (_placer == null)
+            {
+                _placer = GetComponent<ToothpickPlacerTest>();
+            }
+            return _placer;
+        }
+    }
+
+
+    [Header("Game Mode")]
+    public GameMode gameMode;
+    public enum GameMode
+    {
+        PlacerMode, // placer
+        ChangePickMode, // placer->break toothpick
+        Guess, // guesser => people can say "give up" and find the answer......
+    }
+
+    public Button gameModeButton;
+
+    private void OnEnable()
+    {
+        gameModeButton.onClick.AddListener(Button_ToggleMode);
+        Button_ToggleMode();
+        Button_ToggleMode();
+        Button_ToggleMode();
+    }
+
+    private void OnDisable()
+    {
+        gameModeButton.onClick.RemoveListener(Button_ToggleMode);
+    }
+
+    private void Button_ToggleMode()
+    {
+        SetMode((GameMode)(((int)(gameMode) + 1) % 3));
+        gameModeButton.GetComponentInChildren<Text>().text = gameMode.ToString();
+    }
+
+    public void SetMode(GameMode mode)
+    {
+        gameMode = mode;
+        placer.enabled = mode == GameMode.PlacerMode;
+
+    }
+
+}
