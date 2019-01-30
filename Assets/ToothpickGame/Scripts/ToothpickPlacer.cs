@@ -3,9 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.XR.ARExtensions;
-using UnityEngine.XR.ARFoundation;
-using UnityEngine.XR.FaceSubsystem;
+using UnityEngine.Experimental.XR;
 using Random = UnityEngine.Random;
 
 public class ToothpickPlacer : MonoBehaviour
@@ -25,7 +23,9 @@ public class ToothpickPlacer : MonoBehaviour
             return _mainCamera;
         }
     }
-
+    
+    private List<ToothpickPlaceable> spawnedSticks = new List<ToothpickPlaceable>();
+    public ToothpickPlaceable toothpickPrefab;
 
     [SerializeField]
     private bool placingMode = false;
@@ -59,6 +59,7 @@ public class ToothpickPlacer : MonoBehaviour
         {
             RaycastHit rh;
             var mouseRay = mainCamera.ScreenPointToRay(Input.mousePosition);
+            bool foundSelection = false;
             if (Physics.Raycast(mouseRay, out rh))
             {
                 var hitObject = rh.collider;
@@ -68,8 +69,10 @@ public class ToothpickPlacer : MonoBehaviour
                 {
                     // we hit a toothpick when we clicked. Select it.
                     Select(tp);
+                    foundSelection = true;
                 }
             }
+            
         }
     }
 
@@ -93,10 +96,12 @@ public class ToothpickPlacer : MonoBehaviour
         // null is like deselect.
         if (toothpick == null)
         {
+            // unparent
             foreach (var s in selection)
             {
                 s.transform.SetParent(null);
             }
+            // clear list.
             selection.Clear();
             return;
         }
@@ -112,7 +117,7 @@ public class ToothpickPlacer : MonoBehaviour
             selection.Add(toothpick);
         }
 
-        // parent selection list - could have been just this
+        // parent selection list - could have been just this. or just the actual object...
         for (int i = 0; i < selection.Count; i++)
         {
             selection[i].transform.SetParent(mainCamera.transform);
