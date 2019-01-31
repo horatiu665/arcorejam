@@ -20,41 +20,56 @@ public class ToothpickTypeSwitcherManager : MonoBehaviour
         }
     }
 
+    [SerializeField]
+    private ToothpickPlacerTest _toothpickPlacer;
+    public ToothpickPlacerTest toothpickPlacer
+    {
+        get
+        {
+            if (_toothpickPlacer == null)
+            {
+                _toothpickPlacer = GetComponent<ToothpickPlacerTest>();
+            }
+            return _toothpickPlacer;
+        }
+    }
+
+
     float clickDownTime = 0;
     public float delayForSwitch = 0.2f;
     ToothpickPlaceable lastClicked;
 
-    private void Update()
+    private void OnEnable()
     {
-        if (Input.GetMouseButtonDown(0) ||
-            (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
-        {
-            clickDownTime = Time.time;
-            Vector2 innn = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
+        toothpickPlacer.OnClickObjectDown += ToothpickPlacer_OnClickObjectDown;
+        toothpickPlacer.OnClickObjectUp += ToothpickPlacer_OnClickObjectUp;
+    }
 
-            // first check if we clicked a current spawned stuff
-            var ray = this.mainCamera.ScreenPointToRay(innn);
-            RaycastHit rh;
-            if (Physics.Raycast(ray, out rh))
-            {
-                var hitCollider = rh.collider;
-                // if the hit obj is a toothpick...
-                var tp = ToothpickPlaceable.Get(hitCollider);
-                lastClicked = tp;
-            }
+    private void OnDisable()
+    {
+        toothpickPlacer.OnClickObjectDown -= ToothpickPlacer_OnClickObjectDown;
+        toothpickPlacer.OnClickObjectUp -= ToothpickPlacer_OnClickObjectUp;
+    }
 
-        }
-        else if (Input.GetMouseButtonUp(0) || Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
+    private void ToothpickPlacer_OnClickObjectDown(Vector2 touchPos, Ray ray, RaycastHit rh, ToothpickPlaceable toothpick)
+    {
+        clickDownTime = Time.time;
+        lastClicked = toothpick;
+
+    }
+
+    private void ToothpickPlacer_OnClickObjectUp(Vector2 touchPos, Ray ray, RaycastHit rh, ToothpickPlaceable toothpick)
+    {
+        if (lastClicked != null)
         {
-            if (lastClicked != null)
+            if (Time.time - clickDownTime <= this.delayForSwitch)
             {
-                if (Time.time - clickDownTime <= delayForSwitch)
-                {
-                    ChangeTypeOf(lastClicked);
-                }
+                ChangeTypeOf(lastClicked);
             }
         }
     }
+
+
 
     private static void ChangeTypeOf(ToothpickPlaceable tp)
     {

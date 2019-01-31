@@ -52,7 +52,14 @@ public class ToothpickPlacerTest : MonoBehaviour
 
     public GameObject toothpickPrefab;
 
-    private List<ToothpickPlaceable> highlighted = new List<ToothpickPlaceable>();
+    private HashSet<ToothpickPlaceable> highlighted = new HashSet<ToothpickPlaceable>();
+
+    [Header("Raycast settings")]
+    public float raycastWidth = 0; // turns it into a spherecast at width >0
+
+    public event RaycasterDelegate OnClickObjectDown, OnClickObjectUp;
+    public event RaycasterDelegate OnClickPlanesDown;
+    public delegate void RaycasterDelegate(Vector2 touchPos, Ray ray, RaycastHit rh, ToothpickPlaceable toothpick);
 
     /// <summary>
     /// The Unity Update() method.
@@ -107,7 +114,9 @@ public class ToothpickPlacerTest : MonoBehaviour
         // raycast uin middle, find target obj
         var ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
         RaycastHit rh;
-        if (Physics.Raycast(ray, out rh))
+        Vector2 midScreen = new Vector2(Screen.width / 2, Screen.height / 2);
+        bool raycastHitSomething = GetRaycast(ray, out rh);
+        if (raycastHitSomething)
         {
             // the obj
             var hitCollider = rh.collider;
@@ -123,67 +132,142 @@ public class ToothpickPlacerTest : MonoBehaviour
                 var touch = Input.GetTouch(0);
                 if (touch.phase == TouchPhase.Began)
                 {
-                    HandleClickDown(ray, rh, tp);
+                    HandleClickDown(midScreen, ray, rh, tp);
                 }
                 else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
                 {
-                    HandleClickUp(ray, rh, tp);
+                    HandleClickUp(midScreen, ray, rh, tp);
                 }
             }
             else // mouse shit
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    HandleClickDown(ray, rh, tp);
+                    HandleClickDown(midScreen, ray, rh, tp);
                 }
                 else if (Input.GetMouseButtonUp(0))
                 {
-                    HandleClickUp(ray, rh, tp);
+                    HandleClickUp(midScreen, ray, rh, tp);
                 }
             }
         }
+        // if didn't touch an existing obj
+        else
+        {
+            HandleHighlighting(ray, rh, null);
+            var touchDown = false;
+            if (Input.GetMouseButtonDown(0))
+            {
+                touchDown = true;
+            }
+
+            if (Input.touchCount > 0)
+            {
+                for (int i = 0; i < Input.touchCount; i++)
+                {
+                    var t = Input.GetTouch(i);
+                    if (t.phase == TouchPhase.Began)
+                    {
+                        touchDown = true;
+                    }
+                }
+            }
+
+            if (touchDown)
+            {
+                // ray from mid of screen...??? or mouse input?
+                var touchPos = new Vector2(Screen.width / 2, Screen.height / 2);
+                var spawnedToothpick = DoSpawnStuff(touchPos);
+
+                if (spawnedToothpick != null)
+                {
+                    // now we spawned something, so we should also grab it immediately
+                    // THE RAYCASTHIT RH IS PROBABLY FUCKED HERE. REMEMBER TO FIX WHEN USING LOL.
+                    Select(spawnedToothpick.gameObject);
+                }
+            }
+        }
+
     }
 
-    private void HandleClickUp(Ray ray, RaycastHit rh, ToothpickPlaceable tp)
+    private bool GetRaycast(Ray ray, out RaycastHit rh)
+    {
+        if (raycastWidth == 0)
+        {
+            if (Physics.Raycast(ray, out rh))
+            {
+                return true;
+            }
+            return false;
+        }
+        else
+        {
+            // THIS SHOULD BE CONECAST
+            if (Physics.SphereCast(ray, raycastWidth, out rh))
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    private void HandleClickUp(Vector2 touchPos, Ray ray, RaycastHit rh, ToothpickPlaceable tp)
     {
         Deselect();
+
+        if (OnClickObjectUp != null)
+        {
+            OnClickObjectUp(touchPos, ray, rh, tp);
+        }
     }
 
-    private void HandleClickDown(Ray ray, RaycastHit rh, ToothpickPlaceable tp)
+    private void HandleClickDown(Vector2 touchPos, Ray ray, RaycastHit rh, ToothpickPlaceable tp)
     {
         Select(tp.gameObject);
+
+        if (OnClickObjectDown != null)
+        {
+            OnClickObjectDown(touchPos, ray, rh, tp);
+        }
     }
 
     private void HandleHighlighting(Ray ray, RaycastHit rh, ToothpickPlaceable tp)
     {
         foreach (var h in highlighted)
         {
-            h.Unhighlight();
+            if (h != tp)
+            {
+                h.Unhighlight();
+            }
         }
+        highlighted.Clear();
 
         if (tp != null)
         {
             tp.Highlight();
+            highlighted.Add(tp);
         }
 
     }
 
     private void HandleSnackbar()
     {
-
-        // Hide snackbar when currently tracking at least one plane.
-        Session.GetTrackables<DetectedPlane>(m_AllPlanes);
-        bool showSearchingUI = true;
-        for (int i = 0; i < m_AllPlanes.Count; i++)
+        if (SearchingForPlaneUI != null)
         {
-            if (m_AllPlanes[i].TrackingState == TrackingState.Tracking)
+            // Hide snackbar when currently tracking at least one plane.
+            Session.GetTrackables<DetectedPlane>(m_AllPlanes);
+            bool showSearchingUI = true;
+            for (int i = 0; i < m_AllPlanes.Count; i++)
             {
-                showSearchingUI = false;
-                break;
+                if (m_AllPlanes[i].TrackingState == TrackingState.Tracking)
+                {
+                    showSearchingUI = false;
+                    break;
+                }
             }
-        }
 
-        SearchingForPlaneUI.SetActive(showSearchingUI);
+            SearchingForPlaneUI.SetActive(showSearchingUI);
+        }
     }
 
     // Deselect = Select(null)
@@ -226,7 +310,7 @@ public class ToothpickPlacerTest : MonoBehaviour
 
     }
 
-    private void DoSpawnStuff(Vector2 touchPos)
+    private ToothpickPlaceable DoSpawnStuff(Vector2 touchPos)
     {
         // Raycast against the location the player touched to search for planes.
         TrackableHit hit;
@@ -259,8 +343,11 @@ public class ToothpickPlacerTest : MonoBehaviour
                 // Make Andy model a child of the anchor.
                 andyObject.transform.parent = anchor.transform;
 
+                return andyObject.GetComponent<ToothpickPlaceable>();
             }
         }
+
+        return null;
     }
 
     /// <summary>

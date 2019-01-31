@@ -54,6 +54,7 @@ public class ToothpickPlaceable : MonoBehaviour
     // OPTIMIZE ME...??
     internal void Unhighlight()
     {
+        //Debug.Log("Un ", gameObject);
         var r = collider.GetComponent<Renderer>();
         r.sharedMaterials = new Material[]
         {
@@ -64,6 +65,8 @@ public class ToothpickPlaceable : MonoBehaviour
     // OPTIMIZE ME...??
     internal void Highlight()
     {
+        //Debug.Log("HILIGHT ", gameObject);
+
         var r = collider.GetComponent<Renderer>();
         r.sharedMaterials = new Material[]
         {
