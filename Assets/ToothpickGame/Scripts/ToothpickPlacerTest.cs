@@ -27,7 +27,7 @@ public class ToothpickPlacerTest : MonoBehaviour
         }
     }
 
-    List<GameObject> selection = new List<GameObject>();
+    HashSet<GameObject> selection = new HashSet<GameObject>();
 
     /// <summary>
     /// A game object parenting UI for displaying the "searching for planes" snackbar.
@@ -111,6 +111,45 @@ public class ToothpickPlacerTest : MonoBehaviour
         _UpdateApplicationLifecycle();
         HandleSnackbar();
 
+        // touchesss
+        var touchDown = false;
+        var touchUp = false;
+        var touchPosition = Vector3.zero;
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                touchDown = true;
+                touchPosition = Input.mousePosition;
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                touchUp = true;
+                touchPosition = Input.mousePosition;
+            }
+            else if (Input.touchCount > 0)
+            {
+                for (int i = Input.touchCount - 1; i >= 0; i--)
+                {
+                    var t = Input.GetTouch(i);
+                    if (t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled)
+                    {
+                        touchUp = true;
+                        touchPosition = t.position;
+                    }
+                    if (t.phase == TouchPhase.Began)
+                    {
+                        touchDown = true;
+                        touchPosition = t.position;
+                    }
+                }
+                // prioritize touch up == true.
+                if (touchDown && touchUp)
+                {
+                    touchDown = false;
+                }
+            }
+        }
+
         // raycast uin middle, find target obj
         var ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
         RaycastHit rh;
@@ -123,55 +162,19 @@ public class ToothpickPlacerTest : MonoBehaviour
             var tp = ToothpickPlaceable.Get(hitCollider);
 
             // highlight shit
-            HandleHighlighting(ray, rh, tp);
+            HandleHighlighting(tp);
 
             // if input, do stuff
             // touch shit
-            if (Input.touchCount > 0)
+            if (touchDown)
             {
-                var touch = Input.GetTouch(0);
-                if (touch.phase == TouchPhase.Began)
-                {
-                    HandleClickDown(midScreen, ray, rh, tp);
-                }
-                else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
-                {
-                    HandleClickUp(midScreen, ray, rh, tp);
-                }
-            }
-            else // mouse shit
-            {
-                if (Input.GetMouseButtonDown(0))
-                {
-                    HandleClickDown(midScreen, ray, rh, tp);
-                }
-                else if (Input.GetMouseButtonUp(0))
-                {
-                    HandleClickUp(midScreen, ray, rh, tp);
-                }
+                HandleClickDown(midScreen, ray, rh, tp);
             }
         }
         // if didn't touch an existing obj
         else
         {
-            HandleHighlighting(ray, rh, null);
-            var touchDown = false;
-            if (Input.GetMouseButtonDown(0))
-            {
-                touchDown = true;
-            }
-
-            if (Input.touchCount > 0)
-            {
-                for (int i = 0; i < Input.touchCount; i++)
-                {
-                    var t = Input.GetTouch(i);
-                    if (t.phase == TouchPhase.Began)
-                    {
-                        touchDown = true;
-                    }
-                }
-            }
+            HandleHighlighting(null);
 
             if (touchDown)
             {
@@ -184,8 +187,15 @@ public class ToothpickPlacerTest : MonoBehaviour
                     // now we spawned something, so we should also grab it immediately
                     // THE RAYCASTHIT RH IS PROBABLY FUCKED HERE. REMEMBER TO FIX WHEN USING LOL.
                     Select(spawnedToothpick.gameObject);
+                    HandleHighlighting(spawnedToothpick);
                 }
             }
+        }
+
+        if (touchUp)
+        {
+            HandleClickUp(midScreen, ray, rh, null);
+            HandleHighlighting(null);
         }
 
     }
@@ -231,8 +241,20 @@ public class ToothpickPlacerTest : MonoBehaviour
         }
     }
 
-    private void HandleHighlighting(Ray ray, RaycastHit rh, ToothpickPlaceable tp)
+    private void HandleHighlighting(ToothpickPlaceable tp)
     {
+        if (selection.Count > 0)
+        {
+            foreach (var s in selection)
+            {
+                var selTp = ToothpickPlaceable.Get(s);
+                selTp.Highlight(true);
+                highlighted.Add(selTp);
+            }
+            return;
+        }
+
+        // clear formerly highlighted, except the current one.
         foreach (var h in highlighted)
         {
             if (h != tp)
@@ -303,9 +325,10 @@ public class ToothpickPlacerTest : MonoBehaviour
         }
 
         // parent selection list - could have been just this. or just the actual object...
-        for (int i = 0; i < selection.Count; i++)
+        foreach (var s in selection)
         {
-            selection[i].transform.SetParent(mainCamera.transform);
+            s.transform.SetParent(mainCamera.transform);
+
         }
 
     }

@@ -48,6 +48,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _collider: {fileID: 3937923346560948404}
   highlightMat: {fileID: 2100000, guid: 7bfe6fea4f2a8044eac0285bf1f644f4, type: 2}
+  highlightMatSelected: {fileID: 2100000, guid: ca2c5f0ef59a44741bf4d7ac4498c5c6,
+    type: 2}
 --- !u!114 &7110927616099376291
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1044,7 +1046,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 5
+        scalar: 1
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -1260,7 +1262,7 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxes: 0
   RotationModule:
-    enabled: 0
+    enabled: 1
     x:
       serializedVersion: 2
       minMaxState: 0
@@ -1370,7 +1372,7 @@ ParticleSystem:
     curve:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.7853982
+      scalar: 3.8348374
       minScalar: 0.7853982
       maxCurve:
         serializedVersion: 2

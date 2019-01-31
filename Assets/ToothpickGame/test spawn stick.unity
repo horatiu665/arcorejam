@@ -274,6 +274,7 @@ MonoBehaviour:
   _mainCamera: {fileID: 896679035}
   SearchingForPlaneUI: {fileID: 1133631540}
   toothpickPrefab: {fileID: 16, guid: 02d944cbd1be9f742a0a109593f7ce28, type: 3}
+  raycastWidth: 0
 --- !u!114 &627916104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -303,7 +304,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mainCamera: {fileID: 0}
-  delayForSwitch: 0.2
+  _toothpickPlacer: {fileID: 0}
+  delayForSwitch: 0.33
 --- !u!20 &896679035 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 20155940112608238, guid: c10877f7cd5764de18d46d7b777d1faa,
@@ -815,7 +817,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1759795985}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1

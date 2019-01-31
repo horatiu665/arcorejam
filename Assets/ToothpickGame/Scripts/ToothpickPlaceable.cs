@@ -7,10 +7,19 @@ using UnityEngine;
 public class ToothpickPlaceable : MonoBehaviour
 {
     private static Dictionary<Collider, ToothpickPlaceable> collidersToToothpicks = new Dictionary<Collider, ToothpickPlaceable>();
+    private static Dictionary<GameObject, ToothpickPlaceable> gameObjectsToToothpicks = new Dictionary<GameObject, ToothpickPlaceable>();
+
     public static ToothpickPlaceable Get(Collider c)
     {
         ToothpickPlaceable bb;
         collidersToToothpicks.TryGetValue(c, out bb);
+        return bb;
+    }
+
+    public static ToothpickPlaceable Get(GameObject go)
+    {
+        ToothpickPlaceable bb;
+        gameObjectsToToothpicks.TryGetValue(go, out bb);
         return bb;
     }
 
@@ -30,15 +39,20 @@ public class ToothpickPlaceable : MonoBehaviour
     }
 
     public Material highlightMat;
+    public Material highlightMatSelected;
 
     private void OnEnable()
     {
         collidersToToothpicks.Add(collider, this);
+        gameObjectsToToothpicks.Add(gameObject, this);
+
     }
 
     private void OnDisable()
     {
         collidersToToothpicks.Remove(collider);
+        gameObjectsToToothpicks.Remove(gameObject);
+
     }
 
     public void RefreshModel()
@@ -63,7 +77,7 @@ public class ToothpickPlaceable : MonoBehaviour
     }
 
     // OPTIMIZE ME...??
-    internal void Highlight()
+    internal void Highlight(bool selected = false)
     {
         //Debug.Log("HILIGHT ", gameObject);
 
@@ -71,8 +85,9 @@ public class ToothpickPlaceable : MonoBehaviour
         r.sharedMaterials = new Material[]
         {
             r.sharedMaterials[0],
-            highlightMat
+            selected ? highlightMatSelected : highlightMat,
         };
     }
+
 }
 
