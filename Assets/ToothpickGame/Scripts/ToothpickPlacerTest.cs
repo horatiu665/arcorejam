@@ -56,6 +56,15 @@ public class ToothpickPlacerTest : MonoBehaviour
 
     [Header("Raycast settings")]
     public float raycastWidth = 0; // turns it into a spherecast at width >0
+    public float coneAngleDeg = 15f; // degrees
+
+    [Header("Rotation settings")]
+    public Vector2 rotationSpeed = new Vector2(1, 1);
+    public float maxDeltaTouchForRotation = 100f;
+    private Vector3 prevTouchPos;
+    private bool scaleMode = false;
+    public AnimationCurve rotationMapping = new AnimationCurve() { keys = new Keyframe[] { new Keyframe(0, 0, 0, 0), new Keyframe(1, 1, 0, 0) } };
+
 
     public event RaycasterDelegate OnClickObjectDown, OnClickObjectUp;
     public event RaycasterDelegate OnClickPlanesDown;
@@ -114,19 +123,31 @@ public class ToothpickPlacerTest : MonoBehaviour
         // touchesss
         var touchDown = false;
         var touchUp = false;
+        var touching = false;
         var touchPosition = Vector3.zero;
         {
+            // default mouse pos
+            if (Input.GetMouseButton(0))
+            {
+                touchPosition = Input.mousePosition;
+                touching = true;
+            }
+
+            // mouse down n up
             if (Input.GetMouseButtonDown(0))
             {
                 touchDown = true;
                 touchPosition = Input.mousePosition;
+                prevTouchPos = touchPosition;
             }
             else if (Input.GetMouseButtonUp(0))
             {
                 touchUp = true;
                 touchPosition = Input.mousePosition;
             }
-            else if (Input.touchCount > 0)
+
+            // touch overrides this shit
+            if (Input.touchCount > 0)
             {
                 for (int i = Input.touchCount - 1; i >= 0; i--)
                 {
@@ -136,9 +157,15 @@ public class ToothpickPlacerTest : MonoBehaviour
                         touchUp = true;
                         touchPosition = t.position;
                     }
-                    if (t.phase == TouchPhase.Began)
+                    else if (t.phase == TouchPhase.Began)
                     {
                         touchDown = true;
+                        touchPosition = t.position;
+                        prevTouchPos = touchPosition;
+                    }
+                    else if (t.phase == TouchPhase.Stationary || t.phase == TouchPhase.Moved)
+                    {
+                        touching = true;
                         touchPosition = t.position;
                     }
                 }
@@ -147,6 +174,7 @@ public class ToothpickPlacerTest : MonoBehaviour
                 {
                     touchDown = false;
                 }
+
             }
         }
 
@@ -198,7 +226,53 @@ public class ToothpickPlacerTest : MonoBehaviour
             HandleHighlighting(null);
         }
 
+
+        if (touching)
+        {
+            if (selection.Count > 0)
+            {
+                // do rotation shit...
+                var delta = touchPosition - prevTouchPos;
+                var rotationInput = new Vector2(
+                    rotationMapping.Evaluate(Mathf.Abs(delta.x) / maxDeltaTouchForRotation) * Mathf.Sign(delta.x) * rotationSpeed.x,
+                    rotationMapping.Evaluate(Mathf.Abs(delta.y) / maxDeltaTouchForRotation) * Mathf.Sign(delta.y) * rotationSpeed.y);
+                Debug.Log(rotationInput);
+                foreach (var s in selection)
+                {
+                    // rotate in camera space....
+                    var dummy = rotationDummy.transform;
+                    dummy.position = mainCamera.transform.position;
+                    dummy.rotation = mainCamera.transform.rotation;
+                    var initRot = dummy.rotation;
+                    dummy.Rotate(mainCamera.transform.right, rotationInput.y);
+                    dummy.Rotate(mainCamera.transform.up, rotationInput.x);
+                    var deltaRot = dummy.rotation * Quaternion.Inverse(initRot);
+
+                    s.transform.rotation *= deltaRot;
+                }
+            }
+        }
+
+
+        // at end, set prev touch position for next frame
+        prevTouchPos = touchPosition;
+
     }
+
+    [SerializeField]
+    private GameObject _rotationDummy;
+    public GameObject rotationDummy
+    {
+        get
+        {
+            if (_rotationDummy == null)
+            {
+                _rotationDummy = new GameObject("[RotationDummy]");
+            }
+            return _rotationDummy;
+        }
+    }
+
 
     private bool GetRaycast(Ray ray, out RaycastHit rh)
     {

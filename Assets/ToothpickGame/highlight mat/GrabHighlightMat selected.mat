@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GrabHighlightMat
+  m_Name: GrabHighlightMat selected
   m_Shader: {fileID: 4800000, guid: 46b12f1a96b98e34f87b25ac4436b37a, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
@@ -73,5 +73,5 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _OutlineColor: {r: 0, g: 1, b: 0.6977856, a: 0.928}
+    - _OutlineColor: {r: 0, g: 1, b: 0.2004807, a: 0.928}
     - _OutlineNNFF: {r: 4, g: 1, b: 8, a: 0}
