@@ -52,7 +52,7 @@ public class ToothpickPlacerTest : MonoBehaviour
 
     public GameObject toothpickPrefab;
 
-    private HashSet<ToothpickPlaceable> highlighted = new HashSet<ToothpickPlaceable>();
+    public HashSet<ToothpickPlaceable> highlighted = new HashSet<ToothpickPlaceable>();
 
     [Header("Raycast settings")]
     public float raycastWidth = 0; // turns it into a spherecast at width >0
