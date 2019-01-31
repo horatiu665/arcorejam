@@ -38,6 +38,9 @@ public class ToothpickTypeSwitcherManager : MonoBehaviour
     float clickDownTime = 0;
     public float delayForSwitch = 0.2f;
     ToothpickPlaceable lastClicked;
+    Vector2 lastTapPos;
+
+    public float maxDeltaPosForSwitch = 0.05f;
 
     private void OnEnable()
     {
@@ -55,7 +58,7 @@ public class ToothpickTypeSwitcherManager : MonoBehaviour
     {
         clickDownTime = Time.time;
         lastClicked = toothpick;
-
+        lastTapPos = touchPos;
     }
 
     private void ToothpickPlacer_OnClickObjectUp(Vector2 touchPos, Ray ray, RaycastHit rh, ToothpickPlaceable toothpick)
@@ -64,7 +67,12 @@ public class ToothpickTypeSwitcherManager : MonoBehaviour
         {
             if (Time.time - clickDownTime <= this.delayForSwitch)
             {
-                ChangeTypeOf(lastClicked);
+                Debug.Log(touchPos + " .. " + lastTapPos + " = " + (touchPos - lastTapPos).magnitude);
+                if ((touchPos - lastTapPos).magnitude < maxDeltaPosForSwitch)
+                {
+                    ChangeTypeOf(lastClicked);
+
+                }
             }
         }
     }

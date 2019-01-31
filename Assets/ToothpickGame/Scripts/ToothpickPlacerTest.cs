@@ -236,19 +236,21 @@ public class ToothpickPlacerTest : MonoBehaviour
                 var rotationInput = new Vector2(
                     rotationMapping.Evaluate(Mathf.Abs(delta.x) / maxDeltaTouchForRotation) * Mathf.Sign(delta.x) * rotationSpeed.x,
                     rotationMapping.Evaluate(Mathf.Abs(delta.y) / maxDeltaTouchForRotation) * Mathf.Sign(delta.y) * rotationSpeed.y);
-                Debug.Log(rotationInput);
+
                 foreach (var s in selection)
                 {
-                    // rotate in camera space....
                     var dummy = rotationDummy.transform;
-                    dummy.position = mainCamera.transform.position;
+                    dummy.position = s.transform.position;
                     dummy.rotation = mainCamera.transform.rotation;
+                    var oldParent = s.transform.parent;
+                    s.transform.SetParent(dummy);
                     var initRot = dummy.rotation;
-                    dummy.Rotate(mainCamera.transform.right, rotationInput.y);
-                    dummy.Rotate(mainCamera.transform.up, rotationInput.x);
-                    var deltaRot = dummy.rotation * Quaternion.Inverse(initRot);
+                    dummy.Rotate(new Vector3(rotationInput.y, 0, 0), Space.Self);
+                    //dummy.Rotate(mainCamera.transform.right, rotationInput.y);
+                    dummy.Rotate(Vector3.up, rotationInput.x);
 
-                    s.transform.rotation *= deltaRot;
+                    s.transform.SetParent(oldParent);
+
                 }
             }
         }

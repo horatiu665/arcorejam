@@ -276,37 +276,38 @@ MonoBehaviour:
   toothpickPrefab: {fileID: 16, guid: 02d944cbd1be9f742a0a109593f7ce28, type: 3}
   raycastWidth: 0.05
   coneAngleDeg: 15
-  rotationSpeed: {x: 1, y: 1}
+  rotationSpeed: {x: 30, y: 30}
+  maxDeltaTouchForRotation: 100
   rotationMapping:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: -1
       value: -1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: 1
+      outSlope: 1
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: 1
+      outSlope: 1
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -342,6 +343,7 @@ MonoBehaviour:
   _mainCamera: {fileID: 0}
   _toothpickPlacer: {fileID: 0}
   delayForSwitch: 0.33
+  maxDeltaPosForSwitch: 0
 --- !u!20 &896679035 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 20155940112608238, guid: c10877f7cd5764de18d46d7b777d1faa,
