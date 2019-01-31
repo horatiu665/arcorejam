@@ -29,6 +29,8 @@ namespace GoogleARCore.Examples.Common
     /// </summary>
     public class DetectedPlaneVisualizer : MonoBehaviour
     {
+        public static bool showPlanes = true;
+
         private static int s_PlaneCount = 0;
 
         private readonly Color[] k_PlaneColors = new Color[]
@@ -94,7 +96,7 @@ namespace GoogleARCore.Examples.Common
                  return;
             }
 
-            m_MeshRenderer.enabled = true;
+            m_MeshRenderer.enabled = showPlanes;
 
             _UpdateMeshIfNeeded();
         }

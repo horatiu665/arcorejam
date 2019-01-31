@@ -65,6 +65,9 @@ public class ToothpickPlacerTest : MonoBehaviour
     private bool scaleMode = false;
     public AnimationCurve rotationMapping = new AnimationCurve() { keys = new Keyframe[] { new Keyframe(0, 0, 0, 0), new Keyframe(1, 1, 0, 0) } };
 
+    [Header("Click area. xy big is top right.")]
+    public Rect clickAreaInScreens = new Rect(0, 0.1f, 0, 1f);
+    private Rect clickArea;
 
     public event RaycasterDelegate OnClickObjectDown, OnClickObjectUp;
     public event RaycasterDelegate OnClickPlanesDown;
@@ -176,6 +179,13 @@ public class ToothpickPlacerTest : MonoBehaviour
                 }
 
             }
+
+            if (touching && !clickArea.Contains(touchPosition))
+            {
+                Debug.Log("NOT: " + touchPosition);
+                return;
+            }
+
         }
 
         // raycast uin middle, find target obj
@@ -196,7 +206,7 @@ public class ToothpickPlacerTest : MonoBehaviour
             // touch shit
             if (touchDown)
             {
-                HandleClickDown(midScreen, ray, rh, tp);
+                HandleClickDown(touchPosition, ray, rh, tp);
             }
         }
         // if didn't touch an existing obj
@@ -222,7 +232,7 @@ public class ToothpickPlacerTest : MonoBehaviour
 
         if (touchUp)
         {
-            HandleClickUp(midScreen, ray, rh, null);
+            HandleClickUp(touchPosition, ray, rh, null);
             HandleHighlighting(null);
         }
 
@@ -258,7 +268,7 @@ public class ToothpickPlacerTest : MonoBehaviour
 
         // at end, set prev touch position for next frame
         prevTouchPos = touchPosition;
-
+        debug_lastTouchPos = touchPosition;
     }
 
     [SerializeField]
@@ -275,6 +285,11 @@ public class ToothpickPlacerTest : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        clickArea = new Rect(clickAreaInScreens.x * Screen.width, clickAreaInScreens.y * Screen.height, clickAreaInScreens.width * Screen.width, clickAreaInScreens.height * Screen.height);
+
+    }
 
     private bool GetRaycast(Ray ray, out RaycastHit rh)
     {
@@ -519,4 +534,10 @@ public class ToothpickPlacerTest : MonoBehaviour
             }));
         }
     }
+
+    Vector2 debug_lastTouchPos;
+    //private void OnGUI()
+    //{
+    //    //GUI.Label(new Rect(10, 10, 300, 100), debug_lastTouchPos.ToString());
+    //}
 }

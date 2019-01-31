@@ -1,3 +1,4 @@
+using GoogleARCore.Examples.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -63,7 +64,7 @@ public class ModeController : MonoBehaviour
 
     private void Button_ToggleMode()
     {
-        SetMode((GameMode)(((int)(gameMode) + 1) % 3));
+        SetMode((GameMode)(((int)(gameMode) + 1) % 2));
         gameModeButton.GetComponentInChildren<Text>().text = gameMode.ToString();
     }
 
@@ -73,6 +74,8 @@ public class ModeController : MonoBehaviour
         placer.enabled = mode == GameMode.PlacerMode;
         changePickModeScript.enabled = mode == GameMode.PlacerMode;
 
+        // do not show planes in guess mode.
+        DetectedPlaneVisualizer.showPlanes = mode != GameMode.Guess;
     }
 
 }

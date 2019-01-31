@@ -65,9 +65,9 @@ public class ToothpickTypeSwitcherManager : MonoBehaviour
     {
         if (lastClicked != null)
         {
+                Debug.Log(touchPos + " .. " + lastTapPos + " = " + (touchPos - lastTapPos).magnitude);
             if (Time.time - clickDownTime <= this.delayForSwitch)
             {
-                Debug.Log(touchPos + " .. " + lastTapPos + " = " + (touchPos - lastTapPos).magnitude);
                 if ((touchPos - lastTapPos).magnitude < maxDeltaPosForSwitch)
                 {
                     ChangeTypeOf(lastClicked);
