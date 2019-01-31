@@ -27,7 +27,7 @@ public class ToothpickPlacerTest : MonoBehaviour
         }
     }
 
-    HashSet<GameObject> selection = new HashSet<GameObject>();
+    public HashSet<GameObject> selection = new HashSet<GameObject>();
 
     /// <summary>
     /// A game object parenting UI for displaying the "searching for planes" snackbar.
@@ -400,11 +400,11 @@ public class ToothpickPlacerTest : MonoBehaviour
         // null is like deselect.
         if (toothpick == null)
         {
-            // unparent
-            foreach (var s in selection)
-            {
-                s.transform.SetParent(null);
-            }
+            //// unparent
+            //foreach (var s in selection)
+            //{
+            //    s.transform.SetParent(null);
+            //}
             // clear list.
             selection.Clear();
             return;
@@ -421,12 +421,12 @@ public class ToothpickPlacerTest : MonoBehaviour
             selection.Add(toothpick);
         }
 
-        // parent selection list - could have been just this. or just the actual object...
-        foreach (var s in selection)
-        {
-            s.transform.SetParent(mainCamera.transform);
+        //// parent selection list - could have been just this. or just the actual object...
+        //foreach (var s in selection)
+        //{
+        //    s.transform.SetParent(mainCamera.transform);
 
-        }
+        //}
 
     }
 

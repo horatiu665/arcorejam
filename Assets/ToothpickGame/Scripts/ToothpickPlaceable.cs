@@ -38,6 +38,21 @@ public class ToothpickPlaceable : MonoBehaviour
         }
     }
 
+    [SerializeField]
+    private Rigidbody _rigidbody;
+    public Rigidbody rigidbody
+    {
+        get
+        {
+            if (_rigidbody == null)
+            {
+                _rigidbody = GetComponent<Rigidbody>();
+            }
+            return _rigidbody;
+        }
+    }
+
+
     public Material highlightMat;
     public Material highlightMatSelected;
 

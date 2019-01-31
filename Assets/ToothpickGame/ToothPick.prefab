@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 18}
   - component: {fileID: 26}
   - component: {fileID: 7110927616099376291}
+  - component: {fileID: 8065319128560741095}
   m_Layer: 0
   m_Name: ToothPick
   m_TagString: Untagged
@@ -47,6 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _collider: {fileID: 3937923346560948404}
+  _rigidbody: {fileID: 0}
   highlightMat: {fileID: 2100000, guid: 7bfe6fea4f2a8044eac0285bf1f644f4, type: 2}
   highlightMatSelected: {fileID: 2100000, guid: ca2c5f0ef59a44741bf4d7ac4498c5c6,
     type: 2}
@@ -71,6 +73,22 @@ MonoBehaviour:
   - {fileID: 4020488465414677874}
   - {fileID: 4020488465414677872}
   switchParticles: {fileID: 1645102060288999742}
+--- !u!54 &8065319128560741095
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 16}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1654969905873531621
 GameObject:
   m_ObjectHideFlags: 0
