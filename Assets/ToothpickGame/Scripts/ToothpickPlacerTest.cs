@@ -180,7 +180,7 @@ public class ToothpickPlacerTest : MonoBehaviour
 
             }
 
-            if (touching && !clickArea.Contains(touchPosition))
+            if ((touching || touchDown) && !clickArea.Contains(touchPosition))
             {
                 Debug.Log("NOT: " + touchPosition);
                 return;
@@ -243,6 +243,7 @@ public class ToothpickPlacerTest : MonoBehaviour
             {
                 // do rotation shit...
                 var delta = touchPosition - prevTouchPos;
+                var maxDelta = maxDeltaTouchForRotation * 1080 * Mathf.Min(Screen.width, Screen.height);
                 var rotationInput = new Vector2(
                     rotationMapping.Evaluate(Mathf.Abs(delta.x) / maxDeltaTouchForRotation) * Mathf.Sign(delta.x) * rotationSpeed.x,
                     rotationMapping.Evaluate(Mathf.Abs(delta.y) / maxDeltaTouchForRotation) * Mathf.Sign(delta.y) * rotationSpeed.y);
@@ -360,6 +361,11 @@ public class ToothpickPlacerTest : MonoBehaviour
             tp.Highlight();
             highlighted.Add(tp);
         }
+
+    }
+    public void RefreshHighlightingExternal()
+    {
+        HandleHighlighting(null);
 
     }
 

@@ -37,8 +37,6 @@ public class ModeController : MonoBehaviour
         }
     }
 
-
-
     [Header("Game Mode")]
     public GameMode gameMode;
     public enum GameMode
@@ -52,7 +50,6 @@ public class ModeController : MonoBehaviour
     private void OnEnable()
     {
         gameModeButton.onClick.AddListener(Button_ToggleMode);
-        Button_ToggleMode();
         Button_ToggleMode();
         Button_ToggleMode();
     }
@@ -74,8 +71,10 @@ public class ModeController : MonoBehaviour
         placer.enabled = mode == GameMode.PlacerMode;
         changePickModeScript.enabled = mode == GameMode.PlacerMode;
 
-        // do not show planes in guess mode.
+        // do not show planes in guess mode...?
         DetectedPlaneVisualizer.showPlanes = mode != GameMode.Guess;
+
+        placer.RefreshHighlightingExternal();
     }
 
 }

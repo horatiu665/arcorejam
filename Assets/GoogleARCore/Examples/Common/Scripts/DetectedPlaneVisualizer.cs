@@ -30,6 +30,7 @@ namespace GoogleARCore.Examples.Common
     public class DetectedPlaneVisualizer : MonoBehaviour
     {
         public static bool showPlanes = true;
+        bool prevShowPlanes;
 
         private static int s_PlaneCount = 0;
 
@@ -96,7 +97,23 @@ namespace GoogleARCore.Examples.Common
                  return;
             }
 
-            m_MeshRenderer.enabled = showPlanes;
+            m_MeshRenderer.enabled = true;
+            if (showPlanes != prevShowPlanes)
+            {
+                prevShowPlanes = showPlanes;
+                var showMat = MaterialRefManager.instance.planePlacement;
+                var shadowMat = MaterialRefManager.instance.planeShadows;
+                m_MeshRenderer.sharedMaterials = showPlanes ?
+                    new Material[2]
+                    {
+                        showMat, shadowMat,
+                    } :
+                    new Material[1]
+                    {
+                        shadowMat,
+                    };
+
+            }
 
             _UpdateMeshIfNeeded();
         }
