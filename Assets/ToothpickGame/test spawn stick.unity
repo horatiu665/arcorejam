@@ -112,6 +112,68 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &133341936
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1257578932710358, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
+      propertyPath: m_Name
+      value: ARSurfaceManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 4342839487878972, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4342839487878972, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4342839487878972, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4342839487878972, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4342839487878972, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4342839487878972, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4342839487878972, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4342839487878972, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
+      propertyPath: m_RootOrder
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4342839487878972, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4342839487878972, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4342839487878972, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114560403693966616, guid: 4210f69c7abef404b91eddf60aca16bc,
+        type: 3}
+      propertyPath: applyMaterial
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
 --- !u!1 &457440137
 GameObject:
   m_ObjectHideFlags: 0
@@ -277,6 +339,7 @@ MonoBehaviour:
   toothpickPrefab: {fileID: 16, guid: 02d944cbd1be9f742a0a109593f7ce28, type: 3}
   raycastWidth: 0.05
   coneAngleDeg: 15
+  maxRaycastDistance: 50
   rotationSpeed: {x: -100, y: 100}
   maxDeltaTouchForRotation: 100
   rotationMapping:
@@ -312,6 +375,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  rotationForceMulti: 10
   clickAreaInScreens:
     serializedVersion: 2
     x: 0
@@ -319,6 +383,10 @@ MonoBehaviour:
     width: 1
     height: 0.8
   _rotationDummy: {fileID: 0}
+  _rotationDummyChild: {fileID: 0}
+  layers:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!114 &627916104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -367,7 +435,33 @@ MonoBehaviour:
   _laser: {fileID: 0}
   _leadingDummy: {fileID: 0}
   notGrabbed_kinematic: 1
-  forceAmount: 1
+  lerpFactor: 1
+  distToForceMapping:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  maxDistForMapping: 1
+  forceMulti: 20
 --- !u!20 &815904877 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 896679035, guid: 20b966368e38d944fbd3f4db65eccf64,
@@ -1038,7 +1132,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2083512465
 MonoBehaviour:
   m_ObjectHideFlags: 0

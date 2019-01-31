@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 26}
   - component: {fileID: 7110927616099376291}
   - component: {fileID: 8065319128560741095}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ToothPick
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 5765022892494037798}
   - component: {fileID: 1645102060288999742}
   - component: {fileID: 5286827839015984374}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4857,7 +4857,7 @@ GameObject:
   - component: {fileID: 4020488465415879024}
   - component: {fileID: 4020488465416879024}
   - component: {fileID: 1992790325466354468}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: toothpic o
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4934,7 +4934,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 4300018, guid: 117782a1b64d46b4a899e78a3d336b68, type: 3}
 --- !u!1 &4020488465414677874
@@ -4949,7 +4949,7 @@ GameObject:
   - component: {fileID: 4020488465415879026}
   - component: {fileID: 4020488465416879026}
   - component: {fileID: 1165530615060191965}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: toothpic c
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5026,7 +5026,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 4300020, guid: 117782a1b64d46b4a899e78a3d336b68, type: 3}
 --- !u!1 &4020488465414677878
@@ -5038,7 +5038,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4020488465415108950}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: art
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5077,7 +5077,7 @@ GameObject:
   - component: {fileID: 4020488465415879032}
   - component: {fileID: 4020488465416879032}
   - component: {fileID: 3937923346560948404}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: toothpic straight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5154,7 +5154,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 4300014, guid: 117782a1b64d46b4a899e78a3d336b68, type: 3}
 --- !u!1 &4020488465414677882
@@ -5169,7 +5169,7 @@ GameObject:
   - component: {fileID: 4020488465415879034}
   - component: {fileID: 4020488465416879034}
   - component: {fileID: 5808770060446947499}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: toothpic 45
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5246,7 +5246,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 4300016, guid: 117782a1b64d46b4a899e78a3d336b68, type: 3}
 --- !u!1 &4020488465414677884
@@ -5261,7 +5261,7 @@ GameObject:
   - component: {fileID: 4020488465415879036}
   - component: {fileID: 4020488465416879036}
   - component: {fileID: 2119351682903668774}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: toothpic z
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5338,7 +5338,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 4300022, guid: 117782a1b64d46b4a899e78a3d336b68, type: 3}
 --- !u!1 &4020488465414677886
@@ -5353,7 +5353,7 @@ GameObject:
   - component: {fileID: 4020488465415879038}
   - component: {fileID: 4020488465416879038}
   - component: {fileID: 503406535447081920}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: toothpic 90
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5430,6 +5430,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 4300012, guid: 117782a1b64d46b4a899e78a3d336b68, type: 3}

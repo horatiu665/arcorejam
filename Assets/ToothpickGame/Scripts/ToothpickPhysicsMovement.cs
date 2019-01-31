@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +53,11 @@ public class ToothpickPhysicsMovement : MonoBehaviour
 
     [Header("RB grab settings")]
     public bool notGrabbed_kinematic = true;
-    public float forceAmount = 1f;
+    public float lerpFactor = 1f;
+
+    public AnimationCurve distToForceMapping = new AnimationCurve() { keys = new Keyframe[] { new Keyframe(0, 0, 0, 0), new Keyframe(1, 1, 0, 0) } };
+    public float maxDistForMapping = 1f;
+    public float forceMulti = 1f;
 
     private void OnEnable()
     {
@@ -72,7 +77,7 @@ public class ToothpickPhysicsMovement : MonoBehaviour
         TestLaser.SetSelected(toothpick.transform, toothpick.transform.InverseTransformPoint(rh.point));
     }
 
-    private void Placer_OnClickObjectUp(Vector2 touchPos, Ray ray, RaycastHit rh, ToothpickPlaceable toothpick)
+    private void Placer_OnClickObjectUp(Vector2 touchPos, Ray ray, ToothpickPlaceable toothpick)
     {
         Deselect();
         TestLaser.ReleaseAll();
@@ -89,8 +94,11 @@ public class ToothpickPhysicsMovement : MonoBehaviour
 
     private void Deselect()
     {
-        curSelected.rigidbody.useGravity = false;
-        curSelected.rigidbody.isKinematic = true;
+        if (curSelected != null)
+        {
+            curSelected.rigidbody.useGravity = false;
+            curSelected.rigidbody.isKinematic = true;
+        }
 
         curSelected = null;
 
@@ -106,33 +114,26 @@ public class ToothpickPhysicsMovement : MonoBehaviour
             // rotate RB
 
             // moverb
-            // accelerate rb towards pointer...?
-            var dir = leadingDummy.position - r.position;
-            Vector3 normalizedForce = dir.normalized;
-            float distanceFromControlTransform = dir.magnitude;
-
-            // Normalize the rigidbody velocity when it is more than one unit from the
-            // target.
-            if (distanceFromControlTransform > 1.0f)
-            {
-                dir = normalizedForce;
-                // Otherwise, scale it by the distance to the target.
-            }
-            else
-            {
-                dir = dir * distanceFromControlTransform;
-            }
-
-            // Set the desired max velocity for the rigidbody.
-            Vector3 targetVelocity = dir * 1;
-
-            // Have the rigidbody accelerate until it reaches target velocity.
-            float timeStep = Mathf.Clamp01(Time.fixedDeltaTime * forceAmount * 8.0f);
-            r.velocity += timeStep * (targetVelocity - r.velocity);
-
+            MoveRb(r);
         }
     }
+    
+    private void MoveRb(Rigidbody r)
+    {
+        // accelerate rb towards pointer...?
+        var dir = leadingDummy.position - r.position;
+        Vector3 normalizedForce = dir.normalized;
+        float distanceFromControlTransform = dir.magnitude;
 
+        dir = normalizedForce * distToForceMapping.Evaluate(distanceFromControlTransform / maxDistForMapping);
+
+        // Set the desired max velocity for the rigidbody.
+        Vector3 targetVelocity = dir * forceMulti;
+
+        // Have the rigidbody accelerate until it reaches target velocity.
+        float timeStep = Mathf.Clamp01(Time.fixedDeltaTime * lerpFactor * 8.0f);
+        r.velocity += timeStep * (targetVelocity - r.velocity);
+    }
 
 
 }

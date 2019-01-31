@@ -43,15 +43,21 @@ public class ModeController : MonoBehaviour
     {
         PlacerMode, // placer, changer, rotator.
         Guess, // guesser => people can say "give up" and find the answer......
+        Egg,
     }
+    public const int GAME_MODES = 3;
 
     public Button gameModeButton;
 
     private void OnEnable()
     {
         gameModeButton.onClick.AddListener(Button_ToggleMode);
-        Button_ToggleMode();
-        Button_ToggleMode();
+
+        // reset the game hehheheheh to the first state...
+        for (int i = 0; i < GAME_MODES; i++)
+        {
+            Button_ToggleMode();
+        }
     }
 
     private void OnDisable()
@@ -61,7 +67,7 @@ public class ModeController : MonoBehaviour
 
     private void Button_ToggleMode()
     {
-        SetMode((GameMode)(((int)(gameMode) + 1) % 2));
+        SetMode((GameMode)(((int)(gameMode) + 1) % GAME_MODES));
         gameModeButton.GetComponentInChildren<Text>().text = gameMode.ToString();
     }
 
@@ -73,6 +79,7 @@ public class ModeController : MonoBehaviour
 
         // do not show planes in guess mode...?
         DetectedPlaneVisualizer.showPlanes = mode != GameMode.Guess;
+        ARSurface.showPlanes = mode != GameMode.Guess;
 
         placer.RefreshHighlightingExternal();
     }

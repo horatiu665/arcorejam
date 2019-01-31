@@ -57,67 +57,60 @@ public class ToothpickPlacerTest : MonoBehaviour
     [Header("Raycast settings")]
     public float raycastWidth = 0; // turns it into a spherecast at width >0
     public float coneAngleDeg = 15f; // degrees
+    public float maxRaycastDistance = 50f;
 
     [Header("Rotation settings")]
     public Vector2 rotationSpeed = new Vector2(1, 1);
     public float maxDeltaTouchForRotation = 100f;
+    private Vector3 curTouchPos;
     private Vector3 prevTouchPos;
     private bool scaleMode = false;
     public AnimationCurve rotationMapping = new AnimationCurve() { keys = new Keyframe[] { new Keyframe(0, 0, 0, 0), new Keyframe(1, 1, 0, 0) } };
+    public float rotationForceMulti = 10f;
 
     [Header("Click area. xy big is top right.")]
     public Rect clickAreaInScreens = new Rect(0, 0.1f, 0, 1f);
     private Rect clickArea;
 
-    public event RaycasterDelegate OnClickObjectDown, OnClickObjectUp;
     public event RaycasterDelegate OnClickPlanesDown;
+    public event RaycasterDelegate OnClickObjectDown;
+    public event ReleaseDelegate OnClickObjectUp;
     public delegate void RaycasterDelegate(Vector2 touchPos, Ray ray, RaycastHit rh, ToothpickPlaceable toothpick);
+    public delegate void ReleaseDelegate(Vector2 touchPos, Ray ray, ToothpickPlaceable toothpick);
 
-    /// <summary>
-    /// The Unity Update() method.
-    /// </summary>
-    public void UpdateOld()
+    private RaycastHit[] raycastHitCache = new RaycastHit[10];
+
+    [SerializeField]
+    private GameObject _rotationDummy;
+    public GameObject rotationDummy
     {
-        _UpdateApplicationLifecycle();
-        HandleSnackbar();
-
-        // check if we are clicking n moving stuff...
-        if (Input.GetMouseButtonDown(0) ||
-            (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
+        get
         {
-            Vector2 innn = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
-
-            // first check if we clicked a current spawned stuff
-            var ray = this.mainCamera.ScreenPointToRay(innn);
-            bool foundSelection = false;
-            RaycastHit rh;
-            if (Physics.Raycast(ray, out rh))
+            if (_rotationDummy == null)
             {
-                var hitCollider = rh.collider;
-                var tp = ToothpickPlaceable.Get(hitCollider);
-                // if the hit obj is a toothpick...
-                if (tp != null)
-                {
-                    // we hit a toothpick when we clicked. Select it.
-                    Select(tp.gameObject);
-                    foundSelection = true;
-                }
+                _rotationDummy = new GameObject("[RotationDummy]");
             }
-
-            if (!foundSelection)
-            {
-                DoSpawnStuff(Input.mousePosition);
-            }
+            return _rotationDummy;
         }
-        else if (Input.GetMouseButtonUp(0) ||
-            (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended))
-        {
-            Deselect();
-
-        }
-
     }
 
+    [SerializeField]
+    private GameObject _rotationDummyChild;
+    public GameObject rotationDummyChild
+    {
+        get
+        {
+            if (_rotationDummyChild == null)
+            {
+                _rotationDummyChild = new GameObject("[RotationDummyChild]");
+            }
+            return _rotationDummyChild;
+        }
+    }
+
+    [Header("Layers for selecting toothpicks")]
+    public LayerMask layers = -1;
+    
     private void Update()
     {
         _UpdateApplicationLifecycle();
@@ -141,6 +134,7 @@ public class ToothpickPlacerTest : MonoBehaviour
             {
                 touchDown = true;
                 touchPosition = Input.mousePosition;
+                curTouchPos = touchPosition;
                 prevTouchPos = touchPosition;
             }
             else if (Input.GetMouseButtonUp(0))
@@ -164,6 +158,7 @@ public class ToothpickPlacerTest : MonoBehaviour
                     {
                         touchDown = true;
                         touchPosition = t.position;
+                        curTouchPos = touchPosition;
                         prevTouchPos = touchPosition;
                     }
                     else if (t.phase == TouchPhase.Stationary || t.phase == TouchPhase.Moved)
@@ -180,6 +175,8 @@ public class ToothpickPlacerTest : MonoBehaviour
 
             }
 
+            curTouching = touching;
+
             if ((touching || touchDown) && !clickArea.Contains(touchPosition))
             {
                 Debug.Log("NOT: " + touchPosition);
@@ -190,27 +187,37 @@ public class ToothpickPlacerTest : MonoBehaviour
 
         // raycast uin middle, find target obj
         var ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
-        RaycastHit rh;
         Vector2 midScreen = new Vector2(Screen.width / 2, Screen.height / 2);
-        bool raycastHitSomething = GetRaycast(ray, out rh);
-        if (raycastHitSomething)
+        int colliderCount = GetRaycast_DidWeHitAnyCollider(ray);
+        if (colliderCount > 0)
         {
+            // find nearest collider in raycast
+            var rh = FindNearestRaycast(ref ray, colliderCount);
+
             // the obj
             var hitCollider = rh.collider;
             var tp = ToothpickPlaceable.Get(hitCollider);
 
-            // highlight shit
-            HandleHighlighting(tp);
-
-            // if input, do stuff
-            // touch shit
-            if (touchDown)
+            if (tp != null)
             {
-                HandleClickDown(touchPosition, ray, rh, tp);
+                // highlight shit
+                HandleHighlighting(tp);
+
+                // if input, do stuff
+                // touch shit
+                if (touchDown)
+                {
+                    HandleClickDown(touchPosition, ray, rh, tp);
+                }
+            }
+            else
+            {
+                colliderCount = 0;
             }
         }
+
         // if didn't touch an existing obj
-        else
+        if (colliderCount == 0)
         {
             HandleHighlighting(null);
 
@@ -232,58 +239,92 @@ public class ToothpickPlacerTest : MonoBehaviour
 
         if (touchUp)
         {
-            HandleClickUp(touchPosition, ray, rh, null);
+            HandleClickUp(touchPosition, ray, null);
             HandleHighlighting(null);
         }
-
-
-        if (touching)
-        {
-            if (selection.Count > 0)
-            {
-                // do rotation shit...
-                var delta = touchPosition - prevTouchPos;
-                var maxDelta = maxDeltaTouchForRotation * 1080 * Mathf.Min(Screen.width, Screen.height);
-                var rotationInput = new Vector2(
-                    rotationMapping.Evaluate(Mathf.Abs(delta.x) / maxDeltaTouchForRotation) * Mathf.Sign(delta.x) * rotationSpeed.x,
-                    rotationMapping.Evaluate(Mathf.Abs(delta.y) / maxDeltaTouchForRotation) * Mathf.Sign(delta.y) * rotationSpeed.y);
-
-                foreach (var s in selection)
-                {
-                    var dummy = rotationDummy.transform;
-                    dummy.position = s.transform.position;
-                    dummy.rotation = mainCamera.transform.rotation;
-                    var oldParent = s.transform.parent;
-                    s.transform.SetParent(dummy);
-                    var initRot = dummy.rotation;
-                    dummy.Rotate(new Vector3(rotationInput.y, 0, 0), Space.Self);
-                    //dummy.Rotate(mainCamera.transform.right, rotationInput.y);
-                    dummy.Rotate(Vector3.up, rotationInput.x);
-
-                    s.transform.SetParent(oldParent);
-
-                }
-            }
-        }
-
-
+        
         // at end, set prev touch position for next frame
-        prevTouchPos = touchPosition;
+        prevTouchPos = curTouchPos;
+        curTouchPos = touchPosition;
         debug_lastTouchPos = touchPosition;
     }
 
-    [SerializeField]
-    private GameObject _rotationDummy;
-    public GameObject rotationDummy
+    // parses the cache of raycasts, after a raycast query, and returns the nearest raycasthit to the origin ray...
+    private RaycastHit FindNearestRaycast(ref Ray ray, int colliderCount)
     {
-        get
+        int nearestIndex = 0;
+        float minSqrMag = float.MaxValue;
+        for (int i = 0; i < colliderCount; i++)
         {
-            if (_rotationDummy == null)
+            // if dist between hit point and ray origin is smaller than minimum, save it as new minimum
+            var sqrMag = (raycastHitCache[i].point - ray.origin).sqrMagnitude;
+            if (sqrMag < minSqrMag)
             {
-                _rotationDummy = new GameObject("[RotationDummy]");
+                minSqrMag = sqrMag;
+                nearestIndex = i;
             }
-            return _rotationDummy;
         }
+        // nearest raycast saved here.
+        var rh = raycastHitCache[nearestIndex];
+        return rh;
+    }
+
+    // trigger rotation when touching and selected...
+    private void FixedUpdate()
+    {
+        if (curTouching)
+        {
+            if (selection.Count > 0)
+                Rotate1();
+        }
+    }
+
+    // the rotation shit, that depends on the prev. touch, and swipy input xy
+    private void Rotate1()
+    {
+        // do rotation shit...
+        var delta = curTouchPos - prevTouchPos;
+        var maxDelta = maxDeltaTouchForRotation * 1080 * Mathf.Min(Screen.width, Screen.height);
+        var rotationInput = new Vector2(
+            rotationMapping.Evaluate(Mathf.Abs(delta.x) / maxDeltaTouchForRotation) * Mathf.Sign(delta.x) * rotationSpeed.x,
+            rotationMapping.Evaluate(Mathf.Abs(delta.y) / maxDeltaTouchForRotation) * Mathf.Sign(delta.y) * rotationSpeed.y);
+
+        foreach (var s in selection)
+        {
+            var dummy = rotationDummy.transform;
+            var dummyChild = rotationDummyChild.transform;
+            dummy.position = s.transform.position;
+            dummy.rotation = mainCamera.transform.rotation;
+            dummyChild.position = s.transform.position;
+            dummyChild.rotation = s.transform.rotation;
+            dummyChild.SetParent(dummy);
+            var initRot = dummy.rotation;
+            dummy.Rotate(new Vector3(rotationInput.y, 0, 0), Space.Self);
+            //dummy.Rotate(mainCamera.transform.right, rotationInput.y);
+            dummy.Rotate(Vector3.up, rotationInput.x);
+
+            dummyChild.SetParent(null);
+
+            RotateRigidbody(s.GetComponent<Rigidbody>(), dummyChild.rotation, s.transform.rotation);
+
+        }
+    }
+
+    // Sets the angular velocity of the rigidbody.
+    private void RotateRigidbody(Rigidbody r, Quaternion finalRot, Quaternion curRot)
+    {
+        float angle;
+        Vector3 axis;
+        // Get the delta between the control transform rotation and the rigidbody.
+        Quaternion rigidbodyRotationDelta = finalRot *
+                                            Quaternion.Inverse(curRot);
+        // Convert this rotation delta to values that can be assigned to rigidbody
+        // angular velocity.
+        rigidbodyRotationDelta.ToAngleAxis(out angle, out axis);
+        // Set the angular velocity of the rigidbody so it rotates towards the
+        // control transform.
+        float timeStep = Mathf.Clamp01(Time.fixedDeltaTime * 8f * rotationForceMulti);
+        r.angularVelocity = timeStep * angle * axis;
     }
 
     private void OnEnable()
@@ -292,34 +333,30 @@ public class ToothpickPlacerTest : MonoBehaviour
 
     }
 
-    private bool GetRaycast(Ray ray, out RaycastHit rh)
+    // returns collider count
+    private int GetRaycast_DidWeHitAnyCollider(Ray ray)
     {
+        int colliderCount = 0;
         if (raycastWidth == 0)
         {
-            if (Physics.Raycast(ray, out rh))
-            {
-                return true;
-            }
-            return false;
+            colliderCount = Physics.RaycastNonAlloc(ray, raycastHitCache, maxRaycastDistance, layers);
+            return colliderCount;
         }
         else
         {
             // THIS SHOULD BE CONECAST
-            if (Physics.SphereCast(ray, raycastWidth, out rh))
-            {
-                return true;
-            }
-            return false;
+            colliderCount = Physics.SphereCastNonAlloc(ray, raycastWidth, raycastHitCache, maxRaycastDistance, layers);
+            return colliderCount;
         }
     }
 
-    private void HandleClickUp(Vector2 touchPos, Ray ray, RaycastHit rh, ToothpickPlaceable tp)
+    private void HandleClickUp(Vector2 touchPos, Ray ray, ToothpickPlaceable tp)
     {
         Deselect();
 
         if (OnClickObjectUp != null)
         {
-            OnClickObjectUp(touchPos, ray, rh, tp);
+            OnClickObjectUp(touchPos, ray, tp);
         }
     }
 
@@ -541,7 +578,8 @@ public class ToothpickPlacerTest : MonoBehaviour
         }
     }
 
-    Vector2 debug_lastTouchPos;
+    private Vector2 debug_lastTouchPos;
+    private bool curTouching;
     //private void OnGUI()
     //{
     //    //GUI.Label(new Rect(10, 10, 300, 100), debug_lastTouchPos.ToString());
