@@ -75,8 +75,12 @@ public class EggController : MonoBehaviour
         inputMan.OnUpdateTouch -= InputMan_OnUpdateTouch;
     }
 
+    public UnityEngine.UI.Text titleText;
+
     private void Update()
     {
+        HandleText();
+
         if (spawnedEgg == null)
         {
             gameState = GameStates.NoEgg;
@@ -98,9 +102,33 @@ public class EggController : MonoBehaviour
 
             distanceTraveled += scoreFromDelta * curMultiplier;
             ScoreText();
+
+            DoHighscore();
+
         }
 
 
+    }
+
+    private void HandleText()
+    {
+        if (titleText != null)
+        {
+            switch (gameState)
+            {
+            case GameStates.NoEgg:
+                titleText.text = "Tap to EGG";
+                break;
+            case GameStates.EggInSpoon_Score:
+                titleText.text = "Walk the EGG!";
+                break;
+            case GameStates.DeadGameOver:
+                titleText.text = "Oopsie";
+                break;
+            default:
+                break;
+            }
+        }
     }
 
     private void ScoreText()
@@ -129,7 +157,13 @@ public class EggController : MonoBehaviour
     {
         gameState = GameStates.NoEgg;
         // or reload scene
+        DoHighscore();
+        distanceTraveled = 0;
 
+    }
+
+    private void DoHighscore()
+    {
         if (distanceTraveled > highscoreLocal)
         {
             highscoreLocal = distanceTraveled;
@@ -139,16 +173,17 @@ public class EggController : MonoBehaviour
                 hiscoreText.gameObject.SetActive(true);
             }
         }
-        distanceTraveled = 0;
-
     }
 
     internal static void DeadEggRemote(EggDestroy eggDestroy)
     {
-        instance.gameState = GameStates.DeadGameOver;
+        if (eggDestroy.gameObject == instance.spawnedEgg)
+        {
+            instance.gameState = GameStates.DeadGameOver;
+        }
 
         // show score...?? etc. and allow reset.
-        
+
     }
 
     private void SpawnEgg()

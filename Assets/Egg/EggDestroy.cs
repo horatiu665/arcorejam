@@ -28,12 +28,30 @@ public class EggDestroy : MonoBehaviour
 
     public float destroyDelay = 7f;
 
+    public float mniVelToDie = 1f;
+
     private void OnEnable()
     {
     }
 
     private void OnDisable()
     {
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.GetComponentInParent<SpoonTag>() != null)
+        {
+            return;
+        }
+
+
+        if (collision.relativeVelocity.magnitude
+            > mniVelToDie)
+        {
+            DeadEgg();
+        }
+
     }
 
     private void Update()
@@ -43,10 +61,8 @@ public class EggDestroy : MonoBehaviour
             if (transform.position.y <= minEggY)
             {
                 DeadEgg();
-                EggController.DeadEggRemote(this);
             }
         }
-
 
     }
 
@@ -64,6 +80,9 @@ public class EggDestroy : MonoBehaviour
         {
             eggDead.Play();
         }
+
+        EggController.DeadEggRemote(this);
+
 
         Destroy(gameObject, destroyDelay);
     }
