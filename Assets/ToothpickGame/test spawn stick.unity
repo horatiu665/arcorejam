@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4366756, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0.43667564, g: 0.48427147, b: 0.56452364, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1680,11 +1680,11 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 08294dddd5528d14e98ee8d93ecaa8bc, type: 3}
-    m_FontSize: 81
+    m_Font: {fileID: 12800000, guid: b4247dd3c3ea53843af8f89417191454, type: 3}
+    m_FontSize: 75
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 0
     m_MaxSize: 300
     m_Alignment: 0
     m_AlignByGeometry: 0
@@ -1692,17 +1692,23 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'A game about ar guessing
+  m_Text: 'A game about guessing in AR
 
 
-    create something (like two toothpicks in an l shape)
+    Create something using two toothpicks
 
-    say what it is
+    Tap to create a toothpick
 
-    pass the phone around to your friends
+    Tap a toothpick to change it''s shape
+
+    Swipe to rotate
+
+    Enter guess mode by typing what your object is and pressing guess
+
+    Pass the phone around to your friends
 
 
-    they must guess with only yes/no questions.'
+    They must guess with only yes/no questions.'
 --- !u!222 &1839137065
 CanvasRenderer:
   m_ObjectHideFlags: 0
