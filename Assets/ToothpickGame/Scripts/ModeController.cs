@@ -43,9 +43,8 @@ public class ModeController : MonoBehaviour
     {
         PlacerMode, // placer, changer, rotator.
         Guess, // guesser => people can say "give up" and find the answer......
-        Egg,
     }
-    public const int GAME_MODES = 3;
+    public const int GAME_MODES = 2;
 
     public Button gameModeButton;
 

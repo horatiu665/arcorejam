@@ -28,30 +28,12 @@ public class ToothpickPlacerTest : MonoBehaviour
     }
 
     public HashSet<GameObject> selection = new HashSet<GameObject>();
-
-    /// <summary>
-    /// A game object parenting UI for displaying the "searching for planes" snackbar.
-    /// </summary>
-    public GameObject SearchingForPlaneUI;
-
-    /// <summary>
-    /// The rotation in degrees need to apply to model when the Andy model is placed.
-    /// </summary>
-    private const float k_ModelRotation = 180.0f;
-
-    /// <summary>
-    /// A list to hold all planes ARCore is tracking in the current frame. This object is used across
-    /// the application to avoid per-frame allocations.
-    /// </summary>
-    private List<DetectedPlane> m_AllPlanes = new List<DetectedPlane>();
-
-    /// <summary>
-    /// True if the app is in the process of quitting due to an ARCore connection error, otherwise false.
-    /// </summary>
-    private bool m_IsQuitting = false;
-
+    
     public GameObject toothpickPrefab;
 
+    private Vector3 curTouchPos;
+    private Vector3 prevTouchPos;
+    
     public HashSet<ToothpickPlaceable> highlighted = new HashSet<ToothpickPlaceable>();
 
     [Header("Raycast settings")]
@@ -62,23 +44,9 @@ public class ToothpickPlacerTest : MonoBehaviour
     [Header("Rotation settings")]
     public Vector2 rotationSpeed = new Vector2(1, 1);
     public float maxDeltaTouchForRotation = 100f;
-    private Vector3 curTouchPos;
-    private Vector3 prevTouchPos;
     private bool scaleMode = false;
     public AnimationCurve rotationMapping = new AnimationCurve() { keys = new Keyframe[] { new Keyframe(0, 0, 0, 0), new Keyframe(1, 1, 0, 0) } };
     public float rotationForceMulti = 10f;
-
-    [Header("Click area. xy big is top right.")]
-    public Rect clickAreaInScreens = new Rect(0, 0.1f, 0, 1f);
-    private Rect clickArea;
-
-    public event RaycasterDelegate OnClickPlanesDown;
-    public event RaycasterDelegate OnClickObjectDown;
-    public event ReleaseDelegate OnClickObjectUp;
-    public delegate void RaycasterDelegate(Vector2 touchPos, Ray ray, RaycastHit rh, ToothpickPlaceable toothpick);
-    public delegate void ReleaseDelegate(Vector2 touchPos, Ray ray, ToothpickPlaceable toothpick);
-
-    private RaycastHit[] raycastHitCache = new RaycastHit[10];
 
     [SerializeField]
     private GameObject _rotationDummy;
@@ -108,14 +76,23 @@ public class ToothpickPlacerTest : MonoBehaviour
         }
     }
 
+    [Header("Click area. xy big is top right.")]
+    public Rect clickAreaInScreens = new Rect(0, 0.1f, 0, 1f);
+    private Rect clickArea;
+
+    public event RaycasterDelegate OnClickPlanesDown;
+    public event RaycasterDelegate OnClickObjectDown;
+    public event ReleaseDelegate OnClickObjectUp;
+    public delegate void RaycasterDelegate(Vector2 touchPos, Ray ray, RaycastHit rh, ToothpickPlaceable toothpick);
+    public delegate void ReleaseDelegate(Vector2 touchPos, Ray ray, ToothpickPlaceable toothpick);
+
+    private RaycastHit[] raycastHitCache = new RaycastHit[10];
+
     [Header("Layers for selecting toothpicks")]
     public LayerMask layers = -1;
     
     private void Update()
     {
-        _UpdateApplicationLifecycle();
-        HandleSnackbar();
-
         // touchesss
         var touchDown = false;
         var touchUp = false;
@@ -405,27 +382,7 @@ public class ToothpickPlacerTest : MonoBehaviour
         HandleHighlighting(null);
 
     }
-
-    private void HandleSnackbar()
-    {
-        if (SearchingForPlaneUI != null)
-        {
-            // Hide snackbar when currently tracking at least one plane.
-            Session.GetTrackables<DetectedPlane>(m_AllPlanes);
-            bool showSearchingUI = true;
-            for (int i = 0; i < m_AllPlanes.Count; i++)
-            {
-                if (m_AllPlanes[i].TrackingState == TrackingState.Tracking)
-                {
-                    showSearchingUI = false;
-                    break;
-                }
-            }
-
-            SearchingForPlaneUI.SetActive(showSearchingUI);
-        }
-    }
-
+    
     // Deselect = Select(null)
     public void Deselect()
     {
@@ -506,78 +463,7 @@ public class ToothpickPlacerTest : MonoBehaviour
 
         return null;
     }
-
-    /// <summary>
-    /// Check and update the application lifecycle.
-    /// </summary>
-    private void _UpdateApplicationLifecycle()
-    {
-        // Exit the app when the 'back' button is pressed.
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
-
-        // Only allow the screen to sleep when not tracking.
-        if (Session.Status != SessionStatus.Tracking)
-        {
-            const int lostTrackingSleepTimeout = 15;
-            Screen.sleepTimeout = lostTrackingSleepTimeout;
-        }
-        else
-        {
-            Screen.sleepTimeout = SleepTimeout.NeverSleep;
-        }
-
-        if (m_IsQuitting)
-        {
-            return;
-        }
-
-        // Quit if ARCore was unable to connect and give Unity some time for the toast to appear.
-        if (Session.Status == SessionStatus.ErrorPermissionNotGranted)
-        {
-            _ShowAndroidToastMessage("Camera permission is needed to run this application.");
-            m_IsQuitting = true;
-            Invoke("_DoQuit", 0.5f);
-        }
-        else if (Session.Status.IsError())
-        {
-            _ShowAndroidToastMessage("ARCore encountered a problem connecting.  Please start the app again.");
-            m_IsQuitting = true;
-            Invoke("_DoQuit", 0.5f);
-        }
-    }
-
-    /// <summary>
-    /// Actually quit the application.
-    /// </summary>
-    private void _DoQuit()
-    {
-        Application.Quit();
-    }
-
-    /// <summary>
-    /// Show an Android toast message.
-    /// </summary>
-    /// <param name="message">Message string to show in the toast.</param>
-    private void _ShowAndroidToastMessage(string message)
-    {
-        AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-        AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-
-        if (unityActivity != null)
-        {
-            AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
-            unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
-            {
-                AndroidJavaObject toastObject = toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity,
-                    message, 0);
-                toastObject.Call("show");
-            }));
-        }
-    }
-
+    
     private Vector2 debug_lastTouchPos;
     private bool curTouching;
     //private void OnGUI()

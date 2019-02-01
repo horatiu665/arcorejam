@@ -8,121 +8,157 @@ using Random = UnityEngine.Random;
 
 public class ToothpickPlacer : MonoBehaviour
 {
-    public List<ToothpickPlaceable> selection = new List<ToothpickPlaceable>();
-
     [SerializeField]
-    private Camera _mainCamera;
-    public Camera mainCamera
+    private HarInputManageAR _inputMan;
+    public HarInputManageAR inputMan
     {
         get
         {
-            if (_mainCamera == null)
+            if (_inputMan == null)
             {
-                _mainCamera = GetComponent<Camera>();
+                _inputMan = GetComponent<HarInputManageAR>();
             }
-            return _mainCamera;
+            return _inputMan;
         }
     }
-    
-    private List<ToothpickPlaceable> spawnedSticks = new List<ToothpickPlaceable>();
-    public ToothpickPlaceable toothpickPrefab;
 
     [SerializeField]
-    private bool placingMode = false;
-
-    public void SetPlacingMode(bool active)
+    private HarRaycaster _raycaster;
+    public HarRaycaster raycaster
     {
-        placingMode = active;
-
-        if (!active)
+        get
         {
-            // finish placing... and change mode to guess mode ;)
-
-        }
-    }
-
-    void Update()
-    {
-        if (placingMode)
-        {
-            Update_TouchDown();
-            Update_TouchUp();
-
-        }
-    }
-
-    private void Update_TouchDown()
-    {
-        // move stuff... select...???
-        // one button selects the raycast in middle of screen
-        if (Input.GetMouseButtonDown(0))
-        {
-            RaycastHit rh;
-            var mouseRay = mainCamera.ScreenPointToRay(Input.mousePosition);
-            bool foundSelection = false;
-            if (Physics.Raycast(mouseRay, out rh))
+            if (_raycaster == null)
             {
-                var hitObject = rh.collider;
-                // if the hit obj is a toothpick...
-                var tp = hitObject.GetComponent<ToothpickPlaceable>();
-                if (tp != null)
-                {
-                    // we hit a toothpick when we clicked. Select it.
-                    Select(tp);
-                    foundSelection = true;
-                }
+                _raycaster = GetComponent<HarRaycaster>();
             }
-            
+            return _raycaster;
         }
     }
 
-    private void Update_TouchUp()
+
+    public GameObject toothpickPrefab;
+
+    public HashSet<ToothpickPlaceable> selection = new HashSet<ToothpickPlaceable>();
+    public HashSet<ToothpickPlaceable> highlighted = new HashSet<ToothpickPlaceable>();
+
+    private void OnEnable()
     {
-        if (Input.GetMouseButtonUp(0))
+        raycaster.OnRaycastOverObject += Raycaster_OnRaycastOverObject;
+        raycaster.OnTapOnObject += Raycaster_OnTapOnObject;
+        raycaster.OnRaycastOverNothing += Raycaster_OnRaycastOverNothing;
+        raycaster.OnTapOnArPlanes += Raycaster_OnTapOnArPlanes;
+        inputMan.OnUpdateTouch += InputMan_OnUpdateTouch;
+    }
+
+    private void OnDisable()
+    {
+        raycaster.OnRaycastOverObject -= Raycaster_OnRaycastOverObject;
+        raycaster.OnTapOnObject -= Raycaster_OnTapOnObject;
+        raycaster.OnRaycastOverNothing -= Raycaster_OnRaycastOverNothing;
+        raycaster.OnTapOnArPlanes -= Raycaster_OnTapOnArPlanes;
+        inputMan.OnUpdateTouch -= InputMan_OnUpdateTouch;
+    }
+
+    private void InputMan_OnUpdateTouch(HarInputManageAR.TouchData data)
+    {
+        if (data.touchUp)
         {
             Select(null);
-
         }
     }
 
-    // Deselect = Select(null)
-    public void Deselect()
+    private void Raycaster_OnTapOnArPlanes(HarInputManageAR.TouchData touchData, Ray ray, HarRaycaster.RaycastARData raycastARData)
     {
-        Select(null);
+        var tp = SpawnToothpick(raycastARData);
+        Select(tp);
+        Highlight(tp);
+
     }
 
-    public void Select(ToothpickPlaceable toothpick, bool additive = false)
+    // spawns thing and makes anchor for it...
+    private ToothpickPlaceable SpawnToothpick(HarRaycaster.RaycastARData raycastARData)
     {
-        // null is like deselect.
-        if (toothpick == null)
+        var hit = raycastARData.trackableHit;
+
+        // Choose the Andy model for the Trackable that got hit.
+        GameObject prefab;
+        prefab = toothpickPrefab;
+
+        // Instantiate Andy model at the hit pose.
+        var andyObject = Instantiate(prefab, hit.Pose.position, hit.Pose.rotation);
+
+        // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
+        // world evolves.
+        var anchor = hit.Trackable.CreateAnchor(hit.Pose);
+
+        // Make Andy model a child of the anchor.
+        andyObject.transform.parent = anchor.transform;
+
+        var tp = andyObject.GetComponent<ToothpickPlaceable>();
+        return tp;
+    }
+
+    private void Raycaster_OnRaycastOverNothing()
+    {
+        Highlight(null);
+    }
+
+    private void Raycaster_OnTapOnObject(HarInputManageAR.TouchData touchData, Ray ray, RaycastHit rh, ToothpickPlaceable tp)
+    {
+        Select(tp);
+    }
+
+    private void Raycaster_OnRaycastOverObject(ToothpickPlaceable obj)
+    {
+        Highlight(obj);
+    }
+
+    private void Select(ToothpickPlaceable tp)
+    {
+        if (tp == null)
         {
-            // unparent
-            foreach (var s in selection)
-            {
-                s.transform.SetParent(null);
-            }
-            // clear list.
             selection.Clear();
             return;
         }
 
-        // add/remove to selection list
-        if (additive)
-        {
-            selection.Add(toothpick);
-        }
-        else
-        {
-            selection.Clear();
-            selection.Add(toothpick);
-        }
-
-        // parent selection list - could have been just this. or just the actual object...
-        for (int i = 0; i < selection.Count; i++)
-        {
-            selection[i].transform.SetParent(mainCamera.transform);
-        }
+        selection.Clear();
+        selection.Add(tp);
 
     }
+
+    // optimize me???,,,
+    private void Highlight(ToothpickPlaceable obj)
+    {
+        if (selection.Count > 0)
+        {
+            foreach (var s in selection)
+            {
+                s.Highlight(true);
+                highlighted.Add(s);
+            }
+            return;
+        }
+
+        foreach (var h in highlighted)
+        {
+            if (h != obj)
+            {
+                h.Unhighlight();
+            }
+        }
+        highlighted.Clear();
+
+        if (obj != null)
+        {
+            obj.Highlight();
+            highlighted.Add(obj);
+        }
+    }
+    public void RefreshHighlightingExternal()
+    {
+        Highlight(null);
+    }
+
 
 }
