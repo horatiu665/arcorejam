@@ -42,6 +42,8 @@ public class ToothpickPlacer : MonoBehaviour
     public HashSet<ToothpickPlaceable> selection = new HashSet<ToothpickPlaceable>();
     public HashSet<ToothpickPlaceable> highlighted = new HashSet<ToothpickPlaceable>();
 
+    public List<GameObject> allSpawned = new List<GameObject>();
+
     private void OnEnable()
     {
         raycaster.OnRaycastOverObject += Raycaster_OnRaycastOverObject;
@@ -60,6 +62,8 @@ public class ToothpickPlacer : MonoBehaviour
         inputMan.OnUpdateTouch -= InputMan_OnUpdateTouch;
     }
 
+    public event System.Action<ToothpickPlaceable> OnSelect;
+
     private void InputMan_OnUpdateTouch(HarInputManageAR.TouchData data)
     {
         if (data.touchUp)
@@ -71,6 +75,9 @@ public class ToothpickPlacer : MonoBehaviour
     private void Raycaster_OnTapOnArPlanes(HarInputManageAR.TouchData touchData, Ray ray, HarRaycaster.RaycastARData raycastARData)
     {
         var tp = SpawnToothpick(raycastARData);
+
+        allSpawned.Add(tp.gameObject);
+
         Select(tp);
         Highlight(tp);
 
@@ -125,6 +132,7 @@ public class ToothpickPlacer : MonoBehaviour
         selection.Clear();
         selection.Add(tp);
 
+        OnSelect?.Invoke(tp);
     }
 
     // optimize me???,,,

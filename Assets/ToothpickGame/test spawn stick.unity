@@ -264,6 +264,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ARSurfaceManager
       objectReference: {fileID: 0}
+    - target: {fileID: 1257578932710358, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4342839487878972, guid: 4210f69c7abef404b91eddf60aca16bc, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2051,7 +2055,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2083512465
 MonoBehaviour:
   m_ObjectHideFlags: 0

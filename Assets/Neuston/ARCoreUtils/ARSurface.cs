@@ -47,10 +47,6 @@ public class ARSurface : MonoBehaviour
         {
             m_meshRenderer.material = material;
         }
-        if (!colors.ContainsKey(m_meshRenderer))
-        {
-            colors.Add(m_meshRenderer, Random.ColorHSV(0, 1, 0, 1, 0, 1f));
-        }
         Update();
     }
 
@@ -81,11 +77,9 @@ public class ARSurface : MonoBehaviour
 
     }
 
-    private static Dictionary<Renderer, Color> colors = new Dictionary<Renderer, Color>();
-
     private void Update_ShowPlanes(bool forced = false)
     {
-        if (showPlanes != prevShowPlanes || forced)
+        if ((showPlanes != prevShowPlanes) || forced)
         {
             prevShowPlanes = showPlanes;
             // how to fix color?????? of mat?????
@@ -95,16 +89,16 @@ public class ARSurface : MonoBehaviour
 
             var planeAndShadow = new Material[]
                 {
-                        showMat,
-                        shadowMat,
+                    showMat,
+                    shadowMat,
                 };
             var shadowOnly = new Material[]
                 {
-                        shadowMat,
+                    shadowMat,
                 };
             var planeOnly = new Material[]
                 {
-                        showMat,
+                    showMat,
                 };
             var none = new Material[0];
 

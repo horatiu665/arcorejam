@@ -128,13 +128,21 @@ public class ToothpickPhysicsMoverHar : MonoBehaviour
 
     private void OnEnable()
     {
-        raycaster.OnTapOnObject += Raycaster_OnTapOnObject;
+        //raycaster.OnTapOnObject += Raycaster_OnTapOnObject;
+        placer.OnSelect += Placer_OnSelect;
         inputMan.OnUpdateTouch += InputMan_OnUpdateTouch;
+    }
+
+    private void Placer_OnSelect(ToothpickPlaceable tp)
+    {
+        Select(tp);
+        TestLaser.SetSelected(tp.transform, Vector3.zero);
     }
 
     private void OnDisable()
     {
-        raycaster.OnTapOnObject -= Raycaster_OnTapOnObject;
+        //raycaster.OnTapOnObject -= Raycaster_OnTapOnObject;
+        placer.OnSelect -= Placer_OnSelect;
         inputMan.OnUpdateTouch -= InputMan_OnUpdateTouch;
     }
 
