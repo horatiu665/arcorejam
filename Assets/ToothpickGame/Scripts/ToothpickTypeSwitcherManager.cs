@@ -34,6 +34,20 @@ public class ToothpickTypeSwitcherManager : MonoBehaviour
         }
     }
 
+    [SerializeField]
+    private ToothpickPhysicsMoverHar _newPhysMover;
+    public ToothpickPhysicsMoverHar newPhysMover
+    {
+        get
+        {
+            if (_newPhysMover == null)
+            {
+                _newPhysMover = GetComponent<ToothpickPhysicsMoverHar>();
+            }
+            return _newPhysMover;
+        }
+    }
+
 
     float clickDownTime = 0;
     public float delayForSwitch = 0.2f;

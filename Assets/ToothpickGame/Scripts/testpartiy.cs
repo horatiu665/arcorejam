@@ -1,6 +1,6 @@
-// this file was made to help move the code from the ToothpickPlacerTest into new clean classes that use the Har system
-// all was moved except rotation. to completely obsolete the toothpick placer test,
-// implement rotation and phys movement in a new clean script that uses the new toothpick placer built with Har.
+// //////this file was made to help move the code from the ToothpickPlacerTest into new clean classes that use the Har system
+// //////all was moved except rotation.to completely obsolete the toothpick placer test,
+// //////implement rotation and phys movement in a new clean script that uses the new toothpick placer built with Har.
 
 //using System;
 //using System.Collections.Generic;

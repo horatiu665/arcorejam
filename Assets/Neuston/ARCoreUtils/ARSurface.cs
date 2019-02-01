@@ -38,6 +38,10 @@ public class ARSurface : MonoBehaviour
         {
             m_meshRenderer.material = material;
         }
+        if (!colors.ContainsKey(m_meshRenderer))
+        {
+            colors.Add(m_meshRenderer, Random.ColorHSV(0, 1, 0, 1, 0, 1f));
+        }
         Update();
     }
 
@@ -68,6 +72,8 @@ public class ARSurface : MonoBehaviour
 
     }
 
+    private static Dictionary<Renderer, Color> colors = new Dictionary<Renderer, Color>();
+
     private void Update_ShowPlanes()
     {
         if (showPlanes != prevShowPlanes)
@@ -87,6 +93,11 @@ public class ARSurface : MonoBehaviour
                         shadowMat,
                 };
 
+            // breaks?
+            if (showPlanes)
+            {
+                m_meshRenderer.materials[0].SetColor(0, colors[m_meshRenderer]);
+            }
         }
     }
 
