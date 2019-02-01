@@ -5,7 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/ToothpickGame/test spawn stick.unity
     guid: 73e0553cb4f33b547b12b70d82e1019c
+  - enabled: 1
+    path: Assets/Egg/Egg.unity
+    guid: ae9c264a70b51c24e8376c319ac7c8f2
   m_configObjects: {}

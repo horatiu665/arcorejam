@@ -21,6 +21,21 @@ public class FollowWithPhysics : MonoBehaviour
     }
 
     [SerializeField]
+    private HarInputManageAR _inputMan;
+    public HarInputManageAR inputMan
+    {
+        get
+        {
+            if (_inputMan == null)
+            {
+                _inputMan = GetComponent<HarInputManageAR>();
+            }
+            return _inputMan;
+        }
+    }
+
+
+    [SerializeField]
     private Transform _leadingDummy;
     public Transform leadingDummy
     {
@@ -47,6 +62,7 @@ public class FollowWithPhysics : MonoBehaviour
         }
     }
 
+    public Transform centerOfGravity;
     bool selected = false;
 
     [Header("RB grab settings")]
@@ -75,15 +91,38 @@ public class FollowWithPhysics : MonoBehaviour
 
     }
 
+
+
+    private void OnEnable()
+    {
+        inputMan.OnUpdateTouch += InputMan_OnUpdateTouch;
+    }
+
+    private void OnDisable()
+    {
+        inputMan.OnUpdateTouch -= InputMan_OnUpdateTouch;
+    }
+
+    private void InputMan_OnUpdateTouch(HarInputManageAR.TouchData data)
+    {
+        latestData = data;
+    }
+
     void Start()
     {
         Select();
+
+        //r.centerOfMass = transform.InverseTransformPoint(centerOfGravity.transform.position);
     }
+
 
     void FixedUpdate()
     {
         if (selected)
+        {
             MoveRb(r);
+            Rotate1();
+        }
     }
 
 
@@ -103,5 +142,72 @@ public class FollowWithPhysics : MonoBehaviour
         float timeStep = Mathf.Clamp01(Time.fixedDeltaTime * lerpFactor * 8.0f);
         r.velocity += timeStep * (targetVelocity - r.velocity);
     }
+
+
+
+
+
+
+
+
+
+    [Header("Rotation settings")]
+    public float rotationForceMulti = 10f;
+
+    [SerializeField]
+    private GameObject _rotationDummy;
+    public GameObject rotationDummy
+    {
+        get
+        {
+            if (_rotationDummy == null)
+            {
+                _rotationDummy = new GameObject("[RotationDummy]");
+            }
+            return _rotationDummy;
+        }
+    }
+
+    [SerializeField]
+    private GameObject _rotationDummyChild;
+    private HarInputManageAR.TouchData latestData;
+
+    public GameObject rotationDummyChild
+    {
+        get
+        {
+            if (_rotationDummyChild == null)
+            {
+                _rotationDummyChild = new GameObject("[RotationDummyChild]");
+            }
+            return _rotationDummyChild;
+        }
+    }
+
+    // the rotation shit, that depends on the prev. touch, and swipy input xy
+    private void Rotate1()
+    {
+        var finalRot = leadingDummy.transform.rotation;
+        RotateRigidbody(r, finalRot, this.transform.rotation);
+
+    }
+
+    // Sets the angular velocity of the rigidbody.
+    private void RotateRigidbody(Rigidbody r, Quaternion finalRot, Quaternion curRot)
+    {
+        float angle;
+        Vector3 axis;
+        // Get the delta between the control transform rotation and the rigidbody.
+        Quaternion rigidbodyRotationDelta = finalRot *
+                                            Quaternion.Inverse(curRot);
+        // Convert this rotation delta to values that can be assigned to rigidbody
+        // angular velocity.
+        rigidbodyRotationDelta.ToAngleAxis(out angle, out axis);
+        // Set the angular velocity of the rigidbody so it rotates towards the
+        // control transform.
+        float timeStep = Mathf.Clamp01(Time.fixedDeltaTime * 8f * rotationForceMulti);
+        r.angularVelocity = timeStep * angle * axis;
+    }
+
 
 }

@@ -121,7 +121,6 @@ public class EggController : MonoBehaviour
         gameState = GameStates.NoEgg;
         // or reload scene
 
-        distanceTraveled = 0;
         if (distanceTraveled > highscoreLocal)
         {
             highscoreLocal = distanceTraveled;
@@ -131,6 +130,8 @@ public class EggController : MonoBehaviour
                 hiscoreText.gameObject.SetActive(true);
             }
         }
+        distanceTraveled = 0;
+
     }
 
     internal static void DeadEggRemote(EggDestroy eggDestroy)
