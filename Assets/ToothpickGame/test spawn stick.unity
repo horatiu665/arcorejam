@@ -467,6 +467,85 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 182132119}
   m_CullTransparentMesh: 0
+--- !u!1 &198042643
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 198042644}
+  - component: {fileID: 198042646}
+  - component: {fileID: 198042645}
+  m_Layer: 5
+  m_Name: Text (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &198042644
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198042643}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.0000067, y: 1.0000067, z: 1.0000067}
+  m_Children: []
+  m_Father: {fileID: 1844363534}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -0.000030517578, y: -203.5}
+  m_SizeDelta: {x: -106.1, y: 262.09998}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &198042645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198042643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.8235295, b: 0.3529412, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: 08294dddd5528d14e98ee8d93ecaa8bc, type: 3}
+    m_FontSize: 68
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 7
+    m_MaxSize: 300
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: A GAME ABOUT GUESSING IN AR
+--- !u!222 &198042646
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198042643}
+  m_CullTransparentMesh: 0
 --- !u!1 &295420375
 GameObject:
   m_ObjectHideFlags: 0
@@ -1289,8 +1368,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2.8999634, y: 3.0999985}
-  m_SizeDelta: {x: -53.6, y: -20.2}
+  m_AnchoredPosition: {x: 2.8999634, y: -1.3}
+  m_SizeDelta: {x: -53.6, y: -28.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &754718346
 MonoBehaviour:
@@ -3009,10 +3088,10 @@ RectTransform:
   m_Father: {fileID: 1844363534}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -4.9000244}
-  m_SizeDelta: {x: -106.1, y: -257.3}
+  m_AnchoredPosition: {x: 0, y: -784}
+  m_SizeDelta: {x: -106.1, y: 1198.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1839137064
 MonoBehaviour:
@@ -3027,7 +3106,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.8235294, b: 0.3529412, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -3035,11 +3114,11 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 08294dddd5528d14e98ee8d93ecaa8bc, type: 3}
-    m_FontSize: 81
+    m_Font: {fileID: 12800000, guid: b4247dd3c3ea53843af8f89417191454, type: 3}
+    m_FontSize: 75
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 7
     m_MaxSize: 300
     m_Alignment: 0
     m_AlignByGeometry: 0
@@ -3047,17 +3126,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'A game about ar guessing
-
-
-    create something (like two toothpicks in an l shape)
-
-    say what it is
-
-    pass the phone around to your friends
-
-
-    they must guess with only yes/no questions.'
+  m_Text: "Create something using two toothpicks\r.\n\nTap to create a toothpick\r
+    on a surface. Tap it again to change its shape\r. Swipe to rotate\r.\nEnter guess
+    mode by typing what your object is and pressing GUESS\r.\n\nPass the phone around
+    to your friends\r.\n\rThey must GUESS with only yes/no questions."
 --- !u!222 &1839137065
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3097,13 +3169,14 @@ RectTransform:
   m_LocalScale: {x: 0.9999983, y: 0.9999983, z: 0.9999983}
   m_Children:
   - {fileID: 1839137063}
+  - {fileID: 198042644}
   m_Father: {fileID: 1608144857}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.11999512, y: -171.39996}
-  m_SizeDelta: {x: -65.6, y: -412.8}
+  m_AnchoredPosition: {x: 0.11999512, y: -82.1}
+  m_SizeDelta: {x: -65.6, y: -591.4}
   m_Pivot: {x: 0.49999997, y: 0.50000036}
 --- !u!114 &1844363535
 MonoBehaviour:

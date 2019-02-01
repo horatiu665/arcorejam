@@ -71,13 +71,14 @@ public class ToothpickPlacer : MonoBehaviour
         for (int i = 0; i < allSpawned.Count; i++)
         {
             var s = allSpawned[i];
+            Destroy(s.gameObject);
             if (clearParticlesPrefab != null)
             {
                 var pp = Instantiate(clearParticlesPrefab, s.transform.position, Quaternion.identity);
-                Destroy(s.gameObject);
                 Destroy(pp, 7f);
             }
         }
+        allSpawned.Clear();
     }
 
     private void InputMan_OnUpdateTouch(HarInputManageAR.TouchData data)
