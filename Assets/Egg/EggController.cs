@@ -56,6 +56,9 @@ public class EggController : MonoBehaviour
     public float highscoreLocal = 0f;
     private Vector3 oldMainCameraPos;
 
+    [Space]
+    public float distToSpoonForFail = 0.1f;
+
     [Header("Multiplier")]
     public AnimationCurve deltaPosToScore = new AnimationCurve() { keys = new Keyframe[] { new Keyframe(0, 0, 0, 0), new Keyframe(1, 1, 0, 0) } };
     public float maxDeltaPos = 0.1f;
@@ -82,6 +85,12 @@ public class EggController : MonoBehaviour
 
         if (gameState == GameStates.EggInSpoon_Score)
         {
+            var distToSpoon = (spawnedEgg.transform.position - spoonEggTarget.position).magnitude;
+            if (distToSpoon > distToSpoonForFail)
+            {
+                gameState = GameStates.DeadGameOver;
+            }
+
             var delta = inputMan.mainCamera.transform.position - oldMainCameraPos;
             oldMainCameraPos = inputMan.mainCamera.transform.position;
             delta.y = 0;

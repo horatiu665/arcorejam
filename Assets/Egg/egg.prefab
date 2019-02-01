@@ -303,7 +303,7 @@ MonoBehaviour:
   artForOkEgg: {fileID: 75}
   artForDeadEgg: {fileID: 73}
   eggDead: {fileID: 0}
-  minEggY: -3
+  minEggY: -3.06
   destroyDelay: 1
 --- !u!1 &73
 GameObject:

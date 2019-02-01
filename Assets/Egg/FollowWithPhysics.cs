@@ -44,6 +44,8 @@ public class FollowWithPhysics : MonoBehaviour
             if (_leadingDummy == null)
             {
                 _leadingDummy = new GameObject("[dummy lead]").transform;
+                _leadingDummy.transform.position = transform.position;
+                _leadingDummy.transform.SetParent(mainCamera.transform);
             }
             return _leadingDummy;
         }
@@ -78,7 +80,6 @@ public class FollowWithPhysics : MonoBehaviour
         selected = true;
         r.useGravity = false;
         r.isKinematic = false;
-        leadingDummy.transform.position = transform.position;
         leadingDummy.transform.SetParent(mainCamera.transform);
     }
 
