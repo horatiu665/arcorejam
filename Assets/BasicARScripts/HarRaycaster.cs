@@ -40,7 +40,7 @@ public class HarRaycaster : MonoBehaviour
     public float raycastWidth = 0; // turns it into a spherecast at width >0
     //public float coneAngleDeg = 15f; // degrees
     public float maxRaycastDistance = 50f;
-    
+
     private RaycastHit[] raycastHitCache = new RaycastHit[10];
 
     [Header("Layers for these raycasts")]
@@ -103,10 +103,10 @@ public class HarRaycaster : MonoBehaviour
 
             if (touchData.touchDown)
             {
-                TestRaycastOnARShit(touchData, ray);
+                TestRaycastOnARShit(midScreen, touchData, ray);
 
                 // can use to deselect, spawn stuff or wahtever.
-                OnTapOverNothing(touchData, ray);
+                OnTapOverNothing?.Invoke(touchData, ray);
 
             }
         }
@@ -114,14 +114,14 @@ public class HarRaycaster : MonoBehaviour
         // deselect n shit?
     }
 
-    private bool TestRaycastOnARShit(HarInputManageAR.TouchData touchData, Ray ray)
+    private bool TestRaycastOnARShit(Vector2 midScreen, HarInputManageAR.TouchData touchData, Ray ray)
     {
         // Raycast against the location the player touched to search for planes.
         TrackableHit hit;
         TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
             TrackableHitFlags.FeaturePointWithSurfaceNormal;
 
-        if (Frame.Raycast(ray.origin, ray.direction, out hit, Mathf.Infinity, raycastFilter))
+        if (Frame.Raycast(midScreen.x, midScreen.y, raycastFilter, out hit))
         {
             // Use hit pose and camera pose to check if hittest is from the
             // back of the plane, if it is, no need to create the anchor.
@@ -133,7 +133,7 @@ public class HarRaycaster : MonoBehaviour
             }
             else
             {
-                OnTapOnArPlanes(touchData, ray, new RaycastARData()
+                OnTapOnArPlanes?.Invoke(touchData, ray, new RaycastARData()
                 {
                     trackableHit = hit,
                 });
