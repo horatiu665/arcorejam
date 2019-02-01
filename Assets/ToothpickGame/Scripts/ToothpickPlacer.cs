@@ -43,6 +43,7 @@ public class ToothpickPlacer : MonoBehaviour
     public HashSet<ToothpickPlaceable> highlighted = new HashSet<ToothpickPlaceable>();
 
     public List<GameObject> allSpawned = new List<GameObject>();
+    public GameObject clearParticlesPrefab;
 
     private void OnEnable()
     {
@@ -63,6 +64,21 @@ public class ToothpickPlacer : MonoBehaviour
     }
 
     public event System.Action<ToothpickPlaceable> OnSelect;
+
+    public void ClearSpawnedItems()
+    {
+        // particles on each
+        for (int i = 0; i < allSpawned.Count; i++)
+        {
+            var s = allSpawned[i];
+            if (clearParticlesPrefab != null)
+            {
+                var pp = Instantiate(clearParticlesPrefab, s.transform.position, Quaternion.identity);
+                Destroy(s.gameObject);
+                Destroy(pp, 7f);
+            }
+        }
+    }
 
     private void InputMan_OnUpdateTouch(HarInputManageAR.TouchData data)
     {

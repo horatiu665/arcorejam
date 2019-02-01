@@ -19,6 +19,8 @@ public class HarApplicationHandler : MonoBehaviour
     /// </summary>
     public GameObject SearchingForPlaneUI;
 
+    public GameObject unicornUI;
+
     /// <summary>
     /// A list to hold all planes ARCore is tracking in the current frame. This object is used across
     /// the application to avoid per-frame allocations.
@@ -54,6 +56,10 @@ public class HarApplicationHandler : MonoBehaviour
             }
 
             SearchingForPlaneUI.SetActive(showSearchingUI);
+            if (unicornUI != null)
+            {
+                unicornUI.SetActive(showSearchingUI);
+            }
         }
     }
 

@@ -46,6 +46,7 @@ public class ModeControllerHar : MonoBehaviour
     public const int GAME_MODES = 2;
 
     public Button gameModeButton;
+    public Button clearButt;
     public InputField guessField;
 
     public string whatIsThis;
@@ -57,6 +58,7 @@ public class ModeControllerHar : MonoBehaviour
     private void OnEnable()
     {
         gameModeButton.onClick.AddListener(Button_ToggleMode);
+        clearButt.onClick.AddListener(Button_Clear);
 
         // reset the game hehheheheh to the first state...
         for (int i = 0; i < GAME_MODES; i++)
@@ -69,11 +71,17 @@ public class ModeControllerHar : MonoBehaviour
         instructions.onClick.AddListener(OnInstructionsClick);
     }
 
+    private void Button_Clear()
+    {
+        placer.ClearSpawnedItems();
+    }
+
     private void OnInstructionsClick()
     {
         instructions.gameObject.SetActive(false);
 
         guessField.gameObject.SetActive(true);
+        clearButt.gameObject.SetActive(true);
         gameModeButton.gameObject.SetActive(true);
         guessModeText.SetActive(true);
         SetGuessFieldActive();
@@ -85,6 +93,7 @@ public class ModeControllerHar : MonoBehaviour
         instructions.gameObject.SetActive(true);
 
         guessField.gameObject.SetActive(false);
+        clearButt.gameObject.SetActive(false);
         gameModeButton.gameObject.SetActive(false);
         guessModeText.SetActive(false);
         SetGuessFieldActive();
@@ -98,6 +107,7 @@ public class ModeControllerHar : MonoBehaviour
     private void OnDisable()
     {
         gameModeButton.onClick.RemoveListener(Button_ToggleMode);
+        clearButt.onClick.RemoveListener(Button_Clear);
 
         guessField.onValueChanged.RemoveListener(OnGuessFieldChange);
         title.onClick.RemoveListener(OnTitleClick);
@@ -124,7 +134,7 @@ public class ModeControllerHar : MonoBehaviour
         gameModeButton.GetComponentInChildren<Text>().text =
             mode == GameMode.Guess ?
             "GIVE UP" :
-            "CREATE";
+            "GUESS";
 
         SetGuessFieldActive();
     }
@@ -135,11 +145,13 @@ public class ModeControllerHar : MonoBehaviour
         if (mode == GameMode.Guess)
         {
             guessField.gameObject.SetActive(false);
+            clearButt.gameObject.SetActive(false);
             guessModeText.SetActive(true);
         }
-        else
+        else if (mode == GameMode.PlacerMode)
         {
             guessField.gameObject.SetActive(true);
+            clearButt.gameObject.SetActive(true);
             guessModeText.SetActive(false);
         }
     }
