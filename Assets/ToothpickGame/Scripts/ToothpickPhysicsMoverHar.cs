@@ -154,7 +154,7 @@ public class ToothpickPhysicsMoverHar : MonoBehaviour
     private void Raycaster_OnTapOnObject(HarInputManageAR.TouchData touchData, Ray ray, RaycastHit rh, ToothpickPlaceable tp)
     {
         Select(tp);
-        TestLaser.SetSelected(tp.transform, tp.transform.InverseTransformPoint(rh.point));
+        TestLaser.SetSelected(tp.transform, Vector3.zero);
     }
 
     private void Select(ToothpickPlaceable toothpick)

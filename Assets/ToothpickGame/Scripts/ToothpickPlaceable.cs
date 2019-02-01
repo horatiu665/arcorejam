@@ -78,13 +78,21 @@ public class ToothpickPlaceable : MonoBehaviour
         collidersToToothpicks.Add(collider, this);
 
         // maybe do some other shit..?? particles?
+
+        // not cached - because it changes.
+        var hiGetter = GetComponentInChildren<HighlightMatGetter>();
+        if (hiGetter != null)
+        {
+            highlightMat = hiGetter.highlightMat;
+            highlightMatSelected = hiGetter.highlightSelected;
+        }
     }
 
     // OPTIMIZE ME...??
     internal void Unhighlight()
     {
         //Debug.Log("Un ", gameObject);
-        var r = collider.GetComponent<Renderer>();
+        var r = collider.GetComponentInChildren<Renderer>();
         r.sharedMaterials = new Material[]
         {
             r.sharedMaterials[0]
@@ -96,7 +104,7 @@ public class ToothpickPlaceable : MonoBehaviour
     {
         //Debug.Log("HILIGHT ", gameObject);
 
-        var r = collider.GetComponent<Renderer>();
+        var r = collider.GetComponentInChildren<Renderer>();
         r.sharedMaterials = new Material[]
         {
             r.sharedMaterials[0],

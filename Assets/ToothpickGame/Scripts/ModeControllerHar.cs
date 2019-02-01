@@ -76,6 +76,7 @@ public class ModeControllerHar : MonoBehaviour
         guessField.gameObject.SetActive(true);
         gameModeButton.gameObject.SetActive(true);
         guessModeText.SetActive(true);
+        SetGuessFieldActive();
     }
 
 
@@ -86,6 +87,7 @@ public class ModeControllerHar : MonoBehaviour
         guessField.gameObject.SetActive(false);
         gameModeButton.gameObject.SetActive(false);
         guessModeText.SetActive(false);
+        SetGuessFieldActive();
     }
 
     private void OnGuessFieldChange(string arg0)
@@ -124,6 +126,12 @@ public class ModeControllerHar : MonoBehaviour
             "GIVE UP" :
             "CREATE";
 
+        SetGuessFieldActive();
+    }
+
+    private void SetGuessFieldActive()
+    {
+        var mode = this.gameMode;
         if (mode == GameMode.Guess)
         {
             guessField.gameObject.SetActive(false);
@@ -135,5 +143,4 @@ public class ModeControllerHar : MonoBehaviour
             guessModeText.SetActive(false);
         }
     }
-
 }

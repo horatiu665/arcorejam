@@ -1,87 +1,23 @@
 fileFormatVersion: 2
-guid: 117782a1b64d46b4a899e78a3d336b68
+guid: 02fd1500a33081a4686e745d51f00c54
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: pCube1
-    100002: pCube2
-    100004: pCube3
-    100006: pCube4
-    100008: pCube5
-    100010: pCube6
-    100012: //RootNode
-    100014: pCube10
-    100016: pCube11
-    100018: pCube12
-    100020: pCube7
-    100022: pCube8
-    100024: pCube9
-    100026: pSphere1
-    100028: pSphere2
-    400000: pCube1
-    400002: pCube2
-    400004: pCube3
-    400006: pCube4
-    400008: pCube5
-    400010: pCube6
-    400012: //RootNode
-    400014: pCube10
-    400016: pCube11
-    400018: pCube12
-    400020: pCube7
-    400022: pCube8
-    400024: pCube9
-    400026: pSphere1
-    400028: pSphere2
-    2100000: lambert1
-    2300000: pCube1
-    2300002: pCube2
-    2300004: pCube3
-    2300006: pCube4
-    2300008: pCube5
-    2300010: pCube6
-    2300012: pCube10
-    2300014: pCube11
-    2300016: pCube12
-    2300018: pCube7
-    2300020: pCube8
-    2300022: pCube9
-    2300024: pSphere1
-    2300026: pSphere2
-    3300000: pCube1
-    3300002: pCube2
-    3300004: pCube3
-    3300006: pCube4
-    3300008: pCube5
-    3300010: pCube6
-    3300012: pCube10
-    3300014: pCube11
-    3300016: pCube12
-    3300018: pCube7
-    3300020: pCube8
-    3300022: pCube9
-    3300024: pSphere1
-    3300026: pSphere2
-    4300000: pCube1
-    4300002: pCube2
-    4300004: pCube3
-    4300006: pCube4
-    4300008: pCube5
-    4300010: pCube6
-    4300012: pCube7
-    4300014: pCube8
-    4300016: pCube9
-    4300018: pCube10
-    4300020: pCube11
-    4300022: pCube12
-    4300024: pSphere1
-    4300026: pSphere2
+    100000: //RootNode
+    400000: //RootNode
+    2100000: bannanna_yellow
+    2100002: skin_two
+    2100004: black
+    2100006: mouth_red
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: Cube
   externalObjects: {}
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
-    materialLocation: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0

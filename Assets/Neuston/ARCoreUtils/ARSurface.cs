@@ -12,6 +12,8 @@ public class ARSurface : MonoBehaviour
     List<Vector3> m_previousFramePoints = new List<Vector3>();
     Mesh m_mesh;
 
+    bool isVertical;
+
     public static bool showPlanes = true;
     bool prevShowPlanes;
 
@@ -31,8 +33,15 @@ public class ARSurface : MonoBehaviour
         transform.Translate(oneCentimeterUp, Space.Self);
     }
 
+    private void OnEnable()
+    {
+        Update_ShowPlanes(true);
+    }
+
     public void SetTrackedPlane(TrackedPlane plane, Material material)
     {
+        isVertical = plane.PlaneType == DetectedPlaneType.Vertical;
+
         m_trackedPlane = plane;
         if (ARSurfaceManager.instance.applyMaterial)
         {
@@ -74,30 +83,35 @@ public class ARSurface : MonoBehaviour
 
     private static Dictionary<Renderer, Color> colors = new Dictionary<Renderer, Color>();
 
-    private void Update_ShowPlanes()
+    private void Update_ShowPlanes(bool forced = false)
     {
-        if (showPlanes != prevShowPlanes)
+        if (showPlanes != prevShowPlanes || forced)
         {
             prevShowPlanes = showPlanes;
             // how to fix color?????? of mat?????
 
             var showMat = MaterialRefManager.instance.planePlacement;
             var shadowMat = MaterialRefManager.instance.planeShadows;
-            m_meshRenderer.sharedMaterials = showPlanes ?
-                new Material[2]
+
+            var planeAndShadow = new Material[]
                 {
-                        showMat, shadowMat,
-                } :
-                new Material[1]
+                        showMat,
+                        shadowMat,
+                };
+            var shadowOnly = new Material[]
                 {
                         shadowMat,
                 };
+            var planeOnly = new Material[]
+                {
+                        showMat,
+                };
+            var none = new Material[0];
 
-            // breaks?
-            if (showPlanes)
-            {
-                m_meshRenderer.materials[0].SetColor(0, colors[m_meshRenderer]);
-            }
+            m_meshRenderer.sharedMaterials = showPlanes ?
+                (isVertical ? planeOnly : planeAndShadow)
+                : (isVertical ? none : shadowOnly);
+
         }
     }
 

@@ -47,8 +47,12 @@ public class ToothpickArtChooser : MonoBehaviour
         if (Application.isPlaying)
         {
             var e = switchParticles.shape;
-            e.mesh = swapArt[curSwapArt].GetComponent<MeshFilter>().sharedMesh;
-            switchParticles.Play();
+            var mf = swapArt[curSwapArt].GetComponentInChildren<MeshFilter>();
+            if (mf != null)
+            {
+                e.mesh = mf.sharedMesh;
+                switchParticles.Play();
+            }
         }
     }
 }
